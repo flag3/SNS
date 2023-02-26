@@ -7,6 +7,8 @@ import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Tweet from "./pages/tweet";
 import Favorite from "./pages/favorite";
+import Following from "./pages/following";
+import Followers from "./pages/followers";
 import UserID from "./pages/userid";
 import "./index.css";
 
@@ -38,6 +40,22 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           element={
             <PrivateRoute>
               <Favorite />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/:userID/following"
+          element={
+            <PrivateRoute>
+              <Following />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/:userID/followers"
+          element={
+            <PrivateRoute>
+              <Followers />
             </PrivateRoute>
           }
         />

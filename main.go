@@ -33,6 +33,13 @@ type Favorite struct {
   TweetID    int     `json:"tweetid,omitempty"  db:"TweetID"  form:"tweetid"`
   UserID     string  `json:"userid,omitempty"  db:"UserID"  form:"userid"`
 }
+
+type Follow struct {
+  FollowID        int     `json:"followid,omitempty"  db:"FollowID"  form:"followid"`
+  FollowerUserID  string  `json:"followeruserid,omitempty"  db:"FollowerUserID"  form:"followeruserid"`
+  FolloweeUserID  string  `json:"followeeuserid,omitempty"  db:"FolloweeUserID"  form:"followeeuserid"`
+}
+
 func main() {
   _db, err := sqlx.Connect("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOSTNAME"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE")))
   if err != nil {
@@ -55,9 +62,12 @@ func main() {
   withLogin.Use(checkLogin)
 
   withLogin.GET("/:userID", getTweetHandler)
+  withLogin.GET("/:userID/following", getFollowingHandler)
+  withLogin.GET("/:userID/followers", getFollowersHandler)
   withLogin.GET("/:userID/likes", getFavoriteHandler)
   withLogin.POST("/tweet", postTweetHandler)
   withLogin.POST("/likes", postFavoriteHandler)
+  withLogin.POST("/follow", postFollowHandler)
   withLogin.GET("/whoami", getWhoAmIHandler)
 
   e.Start(":4000")
@@ -82,6 +92,11 @@ type User struct {
   UserID     string `json:"userid,omitempty"  db:"UserID"`
   Username   string `json:"username,omitempty"  db:"Username"`
   HashedPass string `json:"-"  db:"HashedPass"`
+}
+
+type Account struct{
+  UserID     string `json:"userid,omitempty"  db:"UserID"`
+  Username   string `json:"username,omitempty"  db:"Username"`
 }
 
 func postSignUpHandler(c echo.Context) error {
@@ -191,6 +206,34 @@ func getFavoriteHandler(c echo.Context) error {
   return c.JSON(http.StatusOK, tweets)
 }
 
+func getFollowingHandler(c echo.Context) error {
+  userID := c.Param("userID")
+
+  accounts := []Account{}
+
+  db.Select(&accounts, "SELECT UserID, Username FROM user JOIN follow ON UserID = FolloweeUserID WHERE FollowerUserID=?", userID)
+  if accounts == nil{
+    return c.NoContent(http.StatusNotFound)
+  }
+  fmt.Println(accounts)
+
+  return c.JSON(http.StatusOK, accounts)
+}
+
+func getFollowersHandler(c echo.Context) error {
+  userID := c.Param("userID")
+
+  accounts := []Account{}
+
+  db.Select(&accounts, "SELECT UserID, Username FROM user JOIN follow ON UserID = FollowerUserID WHERE FolloweeUserID=?", userID)
+  if accounts == nil{
+    return c.NoContent(http.StatusNotFound)
+  }
+  fmt.Println(accounts)
+
+  return c.JSON(http.StatusOK, accounts)
+}
+
 func postTweetHandler(c echo.Context) error {
   userID := c.Get("userID").(string)
 
@@ -221,4 +264,18 @@ func postFavoriteHandler(c echo.Context) error {
 
   db.Exec(favoriteState, favorite.TweetID, userID)
   return c.JSON(http.StatusOK, favorite)
+}
+
+func postFollowHandler(c echo.Context) error {
+  userID := c.Get("userID").(string)
+
+  follow := Follow{}
+  followState := "INSERT INTO follow (FollowerUserID, FolloweeUserID) VALUES (?, ?)"
+
+  if err := c.Bind(&follow); err != nil {
+    return c.JSON(http.StatusBadRequest, follow)
+  }
+
+  db.Exec(followState, userID, follow.FolloweeUserID)
+  return c.JSON(http.StatusOK, follow)
 }

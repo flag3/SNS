@@ -33,3 +33,11 @@ CREATE TABLE `favorite` (
 INSERT INTO `favorite` VALUES (1,8,'sobaya007');
 INSERT INTO `favorite` VALUES (2,1,'sobaya007');
 
+DROP TABLE IF EXISTS `follow`
+CREATE TABLE `follow` ( `FollowID` int NOT NULL AUTO_INCREMENT, 
+  `FollowerUserID` VARCHAR(30) NOT NULL,
+  `FolloweeUserID` VARCHAR(30) NOT NULL,
+  PRIMARY KEY (`FollowID`)
+) ENGINE = InnoDB;
+
+INSERT INTO `follow` VALUES (1,'_ymdtr_', 'sobaya007');
