@@ -6,6 +6,7 @@ import PrivateRoute from "./lib/PrivateRoute";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Tweet from "./pages/tweet";
+import Favorite from "./pages/favorite";
 import UserID from "./pages/userid";
 import "./index.css";
 
@@ -29,6 +30,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           element={
             <PrivateRoute>
               <UserID />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/:userID/likes"
+          element={
+            <PrivateRoute>
+              <Favorite />
             </PrivateRoute>
           }
         />

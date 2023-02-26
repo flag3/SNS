@@ -23,11 +23,16 @@ var (
 )
 
 type Tweet struct {
-  TweetID int     `json:"id,omitempty"  db:"TweetID"  form:"tweetid"`
+  TweetID int     `json:"tweetid,omitempty"  db:"TweetID"  form:"tweetid"`
   UserID  string  `json:"userid,omitempty"  db:"UserID"  form:"userid"`
   Body    string  `json:"body,omitempty"  db:"Body"  form:"body"`
 }
 
+type Favorite struct {
+  FavoriteID int     `json:"favoriteid,omitempty"  db:"FavoriteID"  form:"favoriteid"`
+  TweetID    int     `json:"tweetid,omitempty"  db:"TweetID"  form:"tweetid"`
+  UserID     string  `json:"userid,omitempty"  db:"UserID"  form:"userid"`
+}
 func main() {
   _db, err := sqlx.Connect("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOSTNAME"), os.Getenv("DB_PORT"), os.Getenv("DB_DATABASE")))
   if err != nil {
@@ -50,9 +55,21 @@ func main() {
   withLogin.Use(checkLogin)
 
   withLogin.GET("/:userID", getTweetHandler)
+  withLogin.GET("/:userID/likes", getFavoriteHandler)
   withLogin.POST("/tweet", postTweetHandler)
+  withLogin.GET("/whoami", getWhoAmIHandler)
 
   e.Start(":4000")
+}
+
+type Me struct {
+	Username string `json:"username,omitempty"  db:"username"`
+}
+
+func getWhoAmIHandler(c echo.Context) error {
+	return c.JSON(http.StatusOK, Me{
+		Username: c.Get("userID").(string),
+	})
 }
 
 type LoginRequestBody struct {
@@ -159,6 +176,19 @@ func getTweetHandler(c echo.Context) error {
   return c.JSON(http.StatusOK, tweets)
 }
 
+func getFavoriteHandler(c echo.Context) error {
+  userID := c.Param("userID")
+
+  tweets := []Tweet{}
+
+  // favorite table の中の UserID = "sobaya007" となっている TweetID 全てを取得したい．
+  db.Select(&tweets, "SELECT tweet.TweetID, tweet.UserID, tweet.Body FROM tweet JOIN favorite ON tweet.TweetID = favorite.TweetID WHERE favorite.UserID = ?", userID)
+  if tweets == nil {
+    return c.NoContent(http.StatusNotFound)
+  }
+
+  return c.JSON(http.StatusOK, tweets)
+}
 
 func postTweetHandler(c echo.Context) error {
   userID := c.Get("userID").(string)

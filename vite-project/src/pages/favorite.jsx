@@ -2,12 +2,12 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-function Tweet() {
+function Favorite() {
   const { userID } = useParams();
   const [tweetInfo, setTweetInfo] = useState([]);
 
   useEffect(() => {
-    axios.get(`/api/${userID}`).then((res) => {
+    axios.get(`/api/${userID}/likes`).then((res) => {
       setTweetInfo(res.data);
     });
   }, [userID]);
@@ -18,7 +18,7 @@ function Tweet() {
 
   return (
     <div>
-      <h2>{userID}のツイート</h2>
+      <h2>{userID}さんがいいねしました</h2>
       {tweetInfo.map((tweet) => {
         return (
           <div key={tweet.tweetid}>
@@ -33,4 +33,4 @@ function Tweet() {
   );
 }
 
-export default Tweet;
+export default Favorite;

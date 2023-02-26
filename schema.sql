@@ -22,3 +22,14 @@ CREATE TABLE `tweet` (
 INSERT INTO `tweet` VALUES (1,'sobaya007','は？俺は全強');
 INSERT INTO `tweet` VALUES (2,'sobaya007','は？俺はホモ');
 
+DROP TABLE IF EXISTS `favorite`;
+CREATE TABLE `favorite` (
+  `FavoriteID`  int NOT NULL AUTO_INCREMENT, 
+  `TweetID` int NOT NULL,
+  `UserID`  VARCHAR(30) NOT NULL,
+  PRIMARY KEY (`FavoriteID`)
+) ENGINE = InnoDB;
+
+INSERT INTO `favorite` VALUES (1,8,'sobaya007');
+INSERT INTO `favorite` VALUES (2,1,'sobaya007');
+
