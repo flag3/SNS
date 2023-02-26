@@ -50,7 +50,7 @@ func main() {
   withLogin.Use(checkLogin)
 
   withLogin.GET("/:userID", getTweetHandler)
-  withLogin.POST("/:userID/post", postTweetHandler)
+  withLogin.POST("/tweet", postTweetHandler)
 
   e.Start(":4000")
 }
@@ -161,7 +161,7 @@ func getTweetHandler(c echo.Context) error {
 
 
 func postTweetHandler(c echo.Context) error {
-  userID := c.Param("userID")
+  userID := c.Get("userID").(string)
 
   tweet := Tweet{}
   tweetState := "INSERT INTO tweet (UserID, Body) VALUES (?, ?)"

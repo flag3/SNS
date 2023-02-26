@@ -1,34 +1,38 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useCallback, useState } from "react";
 
 function Tweet() {
-  const { userID } = useParams();
-  const [tweetInfo, setTweetInfo] = useState([]);
+  //const [userid, setUserid] = useState("");
+  const [body, setBody] = useState("");
 
-  useEffect(() => {
-    axios.get(`/api/${userID}`).then((res) => {
-      setTweetInfo(res.data);
-    });
-  }, [userID]);
-
-  useEffect(() => {
-    console.log(tweetInfo);
-  }, [tweetInfo]);
+  const onClickHandler = useCallback(
+    (e) => {
+      e.preventDefault();
+      axios.post("/api/tweet", {
+        body: body,
+      });
+    },
+    [body]
+  );
 
   return (
     <div>
-      <h2>{userID}のツイート</h2>
-      {tweetInfo.map((tweet) => {
-        return (
-          <div key={tweet.tweetid}>
-            <br></br>
-            <div>番号：{tweet.id}</div>
-            <div>ID：{tweet.userid}</div>
-            <div>ツイート：{tweet.body}</div>
-          </div>
-        );
-      })}
+      <form>
+        <div>
+          <label htmlFor="body">ツイート内容: </label>
+          <input
+            type="text"
+            id="body"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+          ></input>
+        </div>
+        <div>
+          <button type="submit" onClick={onClickHandler}>
+            ツイートする
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
