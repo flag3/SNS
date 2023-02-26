@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 function Tweet() {
@@ -25,7 +25,19 @@ function Tweet() {
             <br></br>
             <div>番号：{tweet.tweetid}</div>
             <div>ID：{tweet.userid}</div>
-            <div>ツイート：{tweet.body}</div>
+            <div>
+              ツイート：{tweet.body}
+              <button
+                type="submit"
+                onClick={() => {
+                  axios.post("/api/likes", {
+                    tweetid: tweet.tweetid,
+                  });
+                }}
+              >
+                いいね
+              </button>
+            </div>
           </div>
         );
       })}

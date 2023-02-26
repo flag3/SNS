@@ -57,6 +57,7 @@ func main() {
   withLogin.GET("/:userID", getTweetHandler)
   withLogin.GET("/:userID/likes", getFavoriteHandler)
   withLogin.POST("/tweet", postTweetHandler)
+  withLogin.POST("/likes", postFavoriteHandler)
   withLogin.GET("/whoami", getWhoAmIHandler)
 
   e.Start(":4000")
@@ -206,4 +207,18 @@ func postTweetHandler(c echo.Context) error {
 
   db.Exec(tweetState, userID, tweet.Body)
   return c.JSON(http.StatusOK, tweet)
+}
+
+func postFavoriteHandler(c echo.Context) error {
+  userID := c.Get("userID").(string)
+
+  favorite := Favorite{}
+  favoriteState := "INSERT INTO favorite (TweetID, UserID) VALUES (?, ?)"
+
+  if err := c.Bind(&favorite); err != nil {
+    return c.JSON(http.StatusBadRequest, favorite)
+  }
+
+  db.Exec(favoriteState, favorite.TweetID, userID)
+  return c.JSON(http.StatusOK, favorite)
 }
