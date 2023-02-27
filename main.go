@@ -1,7 +1,6 @@
 package main
 
 import (
-  //"database/sql"
   "fmt"
   "log"
   "net/http"
@@ -197,7 +196,6 @@ func getFavoriteHandler(c echo.Context) error {
 
   tweets := []Tweet{}
 
-  // favorite table の中の UserID = "sobaya007" となっている TweetID 全てを取得したい．
   db.Select(&tweets, "SELECT tweet.TweetID, tweet.UserID, tweet.Body FROM tweet JOIN favorite ON tweet.TweetID = favorite.TweetID WHERE favorite.UserID = ?", userID)
   if tweets == nil {
     return c.NoContent(http.StatusNotFound)
@@ -275,6 +273,19 @@ func postFollowHandler(c echo.Context) error {
   if err := c.Bind(&follow); err != nil {
     return c.JSON(http.StatusBadRequest, follow)
   }
+
+  // ユーザーの存在チェック
+  var count int
+
+  err := db.Get(&count, "SELECT COUNT(*) FROM follow WHERE FollowerUserID=? and FolloweeUserID=?", userID, follow.FolloweeUserID)
+  if err != nil {
+    return c.String(http.StatusInternalServerError, fmt.Sprintf("db error: %v", err))
+  }
+
+  if count > 0 {
+    return c.String(http.StatusConflict, "ユーザーを既にフォローしています")
+  }
+
 
   db.Exec(followState, userID, follow.FolloweeUserID)
   return c.JSON(http.StatusOK, follow)
