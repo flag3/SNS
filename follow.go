@@ -58,10 +58,10 @@ func postFollowHandler(c echo.Context) error {
     return c.JSON(http.StatusBadRequest, follow)
   }
 
-  // ユーザーの存在チェック
+  // フォローしてるかチェック
   var count int
 
-  err := db.Get(&count, "SELECT COUNT(*) FROM follow WHERE FollowerUserID=? and FolloweeUserID=?", userID, follow.FolloweeUserID)
+  err := db.Get(&count, "SELECT COUNT(*) FROM follow WHERE FollowerUserID=? AND FolloweeUserID=?", userID, follow.FolloweeUserID)
   if err != nil {
     return c.String(http.StatusInternalServerError, fmt.Sprintf("db error: %v", err))
   }

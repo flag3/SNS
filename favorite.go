@@ -1,6 +1,7 @@
 package main
 
 import (
+  "fmt"
   "net/http"
 
   "github.com/labstack/echo/v4"
@@ -35,6 +36,18 @@ func postFavoriteHandler(c echo.Context) error {
 
   if err := c.Bind(&favorite); err != nil {
     return c.JSON(http.StatusBadRequest, favorite)
+  }
+
+  // ふぁぼしてるかチェック
+  var count int
+
+  err := db.Get(&count, "SELECT COUNT(*) FROM favorite WHERE TweetID=? AND UserID=?", favorite.FavoriteID, userID)
+  if err != nil {
+    return c.String(http.StatusInternalServerError, fmt.Sprintf("db error: %v", err))
+  }
+
+  if count > 0 {
+    return c.String(http.StatusConflict, "ツイートを既にふぁぼしています")
   }
 
   db.Exec(favoriteState, favorite.TweetID, userID)
