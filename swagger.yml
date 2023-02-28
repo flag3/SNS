@@ -1,0 +1,88 @@
+openapi: 3.0.3
+info:
+  version: 1.0.11
+  title: SNS
+  description: twitter now
+servers:
+  - url: http://localhost:5173/
+paths:
+  /signup:
+    post:
+      tags:
+        - login
+      summary: ユーザー登録
+      description: ユーザーを登録する
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                  example: _ymdtr_
+                password:
+                  type: string
+                  format: password
+                  example: a
+              required:
+                - userid
+                - password
+      responses:
+        "200":
+          description: 正常に登録される
+        "400":
+          description: 項目が空です
+        "409":
+          description: ユーザーが既に存在しています
+  /login:
+    post:
+      tags:
+        - login
+      summary: ログイン
+      description: ログインする
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                  example: _ymdtr_
+                password:
+                  type: string
+                  format: password
+                  example: a
+              required:
+                - userid
+                - password
+      responses:
+        "200":
+          description: ログインに成功する
+        "403":
+          description: パスワードが間違っている
+        "500":
+          description: 何かエラーが返ってくる
+  /whoami:
+    get:
+      tags:
+        - login
+      summary: ログインの確認
+      description: 君誰
+      responses:
+        "200":
+          description: ログイン中
+  /logout:
+    get:
+      tags:
+        - login
+      summary: ログアウトする
+      description: 君誰
+      responses:
+        "200":
+          description: ログアウトに成功する
+        "500":
+          description: 何かエラーが返ってくる
