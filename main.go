@@ -68,6 +68,7 @@ func main() {
   withLogin.POST("/likes", postFavoriteHandler)
   withLogin.POST("/follow", postFollowHandler)
   withLogin.GET("/whoami", getWhoAmIHandler)
+  withLogin.GET("/logout", getLogoutHandler)
 
   e.Start(":4000")
 }
@@ -157,6 +158,18 @@ func postLoginHandler(c echo.Context) error {
     return c.String(http.StatusInternalServerError, "something wrong in getting session")
   }
   sess.Values["userID"] = req.UserID
+  sess.Save(c.Request(), c.Response())
+
+  return c.NoContent(http.StatusOK)
+}
+
+func getLogoutHandler(c echo.Context) error {
+  sess, err := session.Get("sessions", c)
+  if err != nil {
+    fmt.Println(err)
+    return c.String(http.StatusInternalServerError, "something wrong in getting session")
+  }
+  sess.Values["userID"] = nil
   sess.Save(c.Request(), c.Response())
 
   return c.NoContent(http.StatusOK)
@@ -285,7 +298,6 @@ func postFollowHandler(c echo.Context) error {
   if count > 0 {
     return c.String(http.StatusConflict, "ユーザーを既にフォローしています")
   }
-
 
   db.Exec(followState, userID, follow.FolloweeUserID)
   return c.JSON(http.StatusOK, follow)

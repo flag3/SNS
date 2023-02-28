@@ -1,4 +1,4 @@
-module SNS
+module github.com/flag3/SNS
 
 go 1.20
 
