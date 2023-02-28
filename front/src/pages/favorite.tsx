@@ -19,16 +19,18 @@ function Favorite() {
   return (
     <div>
       <h2>{userID}さんがいいねしました</h2>
-      {tweetInfo.map((tweet) => {
-        return (
-          <div key={tweet.tweetid}>
-            <br></br>
-            <div>番号：{tweet.tweetid}</div>
-            <div>ID：{tweet.userid}</div>
-            <div>ツイート：{tweet.body}</div>
-          </div>
-        );
-      })}
+      {tweetInfo.map(
+        (tweet: { tweetid: number; userid: string; body: string }) => {
+          return (
+            <div key={tweet.tweetid}>
+              <br></br>
+              <div>番号：{tweet.tweetid}</div>
+              <div>ID：{tweet.userid}</div>
+              <div>ツイート：{tweet.body}</div>
+            </div>
+          );
+        }
+      )}
     </div>
   );
 }

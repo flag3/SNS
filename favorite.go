@@ -41,7 +41,7 @@ func postFavoriteHandler(c echo.Context) error {
   // ふぁぼしてるかチェック
   var count int
 
-  err := db.Get(&count, "SELECT COUNT(*) FROM favorite WHERE TweetID=? AND UserID=?", favorite.FavoriteID, userID)
+  err := db.Get(&count, "SELECT COUNT(*) FROM favorite WHERE TweetID=? AND UserID=?", favorite.TweetID, userID)
   if err != nil {
     return c.String(http.StatusInternalServerError, fmt.Sprintf("db error: %v", err))
   }
