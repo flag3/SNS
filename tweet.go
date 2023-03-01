@@ -45,3 +45,13 @@ func postTweetHandler(c echo.Context) error {
   return c.JSON(http.StatusOK, tweet)
 }
 
+func deleteTweetHandler(c echo.Context) error {
+  tweetID := c.Param("tweetID")
+  userID := c.Get("userID").(string)
+
+  tweetState := "DELETE FROM tweet WHERE TweetID = ? AND userID = ?"
+
+  db.Exec(tweetState, tweetID, userID)
+  return c.NoContent(http.StatusOK)
+}
+

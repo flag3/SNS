@@ -29,16 +29,6 @@ function Tweet() {
       >
         フォローする
       </button>
-      <button
-        type="submit"
-        onClick={() => {
-          let url = "/api/delete/follow/";
-          url += userID;
-          axios.delete(url);
-        }}
-      >
-        フォロー解除する
-      </button>
       {tweetInfo.map(
         (tweet: { tweetid: number; userid: string; body: string }) => {
           return (
@@ -60,21 +50,11 @@ function Tweet() {
                 </button>
                 <button
                   type="submit"
-                  onClick={() => {
-                    let url = "/api/delete/likes/";
-                    url += tweet.tweetid;
-                    axios.delete(url);
-                  }}
-                >
-                  いいね解除
-                </button>
-                <button
-                  type="submit"
-                  onClick={() => {
-                    let url = "/api/delete/tweet/";
-                    url += tweet.tweetid;
-                    axios.delete(url);
-                  }}
+                  //onClick={() => {
+                  //  axios.delete("/api/delete", {
+                  //    tweetid: tweet.tweetid,
+                  //  });
+                  //}}
                 >
                   消す
                 </button>

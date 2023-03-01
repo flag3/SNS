@@ -51,5 +51,9 @@ func main() {
   withLogin.GET("/whoami", getWhoAmIHandler)
   withLogin.GET("/logout", getLogoutHandler)
 
+  withLogin.DELETE("/delete/tweet/:tweetID", deleteTweetHandler)
+  withLogin.DELETE("/delete/follow/:followeeUserID", deleteFollowHandler)
+  withLogin.DELETE("/delete/likes/:tweetID", deleteFavoriteHandler)
+
   e.Start(":4000")
 }

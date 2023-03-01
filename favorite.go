@@ -53,3 +53,14 @@ func postFavoriteHandler(c echo.Context) error {
   db.Exec(favoriteState, favorite.TweetID, userID)
   return c.JSON(http.StatusOK, favorite)
 }
+
+func deleteFavoriteHandler(c echo.Context) error {
+  tweetID := c.Param("tweetID")
+  userID := c.Get("userID").(string)
+
+  favoriteState := "DELETE FROM favorite WHERE TweetID = ? AND UserID = ?"
+
+  db.Exec(favoriteState, tweetID, userID)
+  return c.NoContent(http.StatusOK)
+}
+

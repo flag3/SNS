@@ -73,3 +73,13 @@ func postFollowHandler(c echo.Context) error {
   db.Exec(followState, userID, follow.FolloweeUserID)
   return c.JSON(http.StatusOK, follow)
 }
+
+func deleteFollowHandler(c echo.Context) error {
+  followeeUserID := c.Param("followeeUserID")
+  userID := c.Get("userID").(string)
+
+  tweetState := "DELETE FROM follow WHERE FollowerUserID = ? AND FolloweeUserID = ?"
+
+  db.Exec(tweetState, userID, followeeUserID)
+  return c.NoContent(http.StatusOK)
+}
