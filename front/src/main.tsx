@@ -5,6 +5,7 @@ import App from "./App";
 import PrivateRoute from "./lib/PrivateRoute";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
+import Logout from "./pages/logout";
 import Tweet from "./pages/tweet";
 import Favorite from "./pages/favorite";
 import Following from "./pages/following";
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/" element={<App />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
         <Route
           path="/tweet"
           element={
