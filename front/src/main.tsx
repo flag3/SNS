@@ -11,6 +11,7 @@ import Favorite from "./pages/favorite";
 import Following from "./pages/following";
 import Followers from "./pages/followers";
 import UserID from "./pages/userid";
+import Home from "./pages/home";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -58,6 +59,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           element={
             <PrivateRoute>
               <Followers />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/home"
+          element={
+            <PrivateRoute>
+              <Home />
             </PrivateRoute>
           }
         />

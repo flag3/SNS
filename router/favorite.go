@@ -22,7 +22,7 @@ func getFavoriteHandler(c echo.Context) error {
 
   tweets := []Tweet{}
 
-  database.Db.Select(&tweets, "SELECT tweet.TweetID, tweet.UserID, tweet.Body FROM tweet JOIN favorite ON tweet.TweetID = favorite.TweetID WHERE favorite.UserID = ?", userID)
+  database.Db.Select(&tweets, "SELECT tweet.* FROM tweet JOIN favorite ON tweet.TweetID = favorite.TweetID WHERE favorite.UserID = ?", userID)
   if tweets == nil {
     return c.NoContent(http.StatusNotFound)
   }

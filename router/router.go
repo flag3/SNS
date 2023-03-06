@@ -23,6 +23,7 @@ func NewServer(e *echo.Echo) {
   withLogin.GET("/:userID/following", getFollowingHandler)
   withLogin.GET("/:userID/followers", getFollowersHandler)
   withLogin.GET("/:userID/likes", getFavoriteHandler)
+  withLogin.GET("/home", getHomeTweetHandler)
   withLogin.POST("/tweet", postTweetHandler)
   withLogin.POST("/like", postFavoriteHandler)
   withLogin.POST("/follow", postFollowHandler)

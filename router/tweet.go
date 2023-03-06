@@ -57,3 +57,16 @@ func deleteTweetHandler(c echo.Context) error {
   return c.NoContent(http.StatusOK)
 }
 
+func getHomeTweetHandler(c echo.Context) error {
+  userID := c.Get("userID").(string)
+
+  tweets := []Tweet{}
+  database.Db.Select(&tweets, "SELECT tweet.* FROM tweet JOIN follow ON tweet.UserID = follow.FolloweeUserID where follow.FollowerUserID = ? OR UserID = ?", userID, userID)
+  if tweets == nil {
+    return c.NoContent(http.StatusNotFound)
+  }
+
+  return c.JSON(http.StatusOK, tweets)
+  
+}
+
