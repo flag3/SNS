@@ -1,10 +1,12 @@
-package main
+package router
 
 import (
   "fmt"
   "net/http"
 
   "github.com/labstack/echo/v4"
+
+  "github.com/flag3/SNS/database"
 
   _ "github.com/go-sql-driver/mysql"
 )
@@ -20,7 +22,7 @@ func getFavoriteHandler(c echo.Context) error {
 
   tweets := []Tweet{}
 
-  db.Select(&tweets, "SELECT tweet.TweetID, tweet.UserID, tweet.Body FROM tweet JOIN favorite ON tweet.TweetID = favorite.TweetID WHERE favorite.UserID = ?", userID)
+  database.Db.Select(&tweets, "SELECT tweet.TweetID, tweet.UserID, tweet.Body FROM tweet JOIN favorite ON tweet.TweetID = favorite.TweetID WHERE favorite.UserID = ?", userID)
   if tweets == nil {
     return c.NoContent(http.StatusNotFound)
   }
@@ -41,7 +43,7 @@ func postFavoriteHandler(c echo.Context) error {
   // ふぁぼしてるかチェック
   var count int
 
-  err := db.Get(&count, "SELECT COUNT(*) FROM favorite WHERE TweetID=? AND UserID=?", favorite.TweetID, userID)
+  err := database.Db.Get(&count, "SELECT COUNT(*) FROM favorite WHERE TweetID=? AND UserID=?", favorite.TweetID, userID)
   if err != nil {
     return c.String(http.StatusInternalServerError, fmt.Sprintf("db error: %v", err))
   }
@@ -50,7 +52,7 @@ func postFavoriteHandler(c echo.Context) error {
     return c.String(http.StatusConflict, "ツイートを既にふぁぼしています")
   }
 
-  db.Exec(favoriteState, favorite.TweetID, userID)
+  database.Db.Exec(favoriteState, favorite.TweetID, userID)
   return c.JSON(http.StatusOK, favorite)
 }
 
@@ -60,7 +62,7 @@ func deleteFavoriteHandler(c echo.Context) error {
 
   favoriteState := "DELETE FROM favorite WHERE TweetID = ? AND UserID = ?"
 
-  db.Exec(favoriteState, tweetID, userID)
+  database.Db.Exec(favoriteState, tweetID, userID)
   return c.NoContent(http.StatusOK)
 }
 

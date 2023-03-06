@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
   "fmt"
@@ -6,6 +6,7 @@ import (
 
   "github.com/labstack/echo/v4"
 
+  "github.com/flag3/SNS/database"
   _ "github.com/go-sql-driver/mysql"
 )
 
@@ -25,7 +26,7 @@ func getFollowingHandler(c echo.Context) error {
 
   accounts := []Account{}
 
-  db.Select(&accounts, "SELECT UserID, Username FROM user JOIN follow ON UserID = FolloweeUserID WHERE FollowerUserID=?", userID)
+  database.Db.Select(&accounts, "SELECT UserID, Username FROM user JOIN follow ON UserID = FolloweeUserID WHERE FollowerUserID=?", userID)
   if accounts == nil{
     return c.NoContent(http.StatusNotFound)
   }
@@ -39,7 +40,7 @@ func getFollowersHandler(c echo.Context) error {
 
   accounts := []Account{}
 
-  db.Select(&accounts, "SELECT UserID, Username FROM user JOIN follow ON UserID = FollowerUserID WHERE FolloweeUserID=?", userID)
+  database.Db.Select(&accounts, "SELECT UserID, Username FROM user JOIN follow ON UserID = FollowerUserID WHERE FolloweeUserID=?", userID)
   if accounts == nil{
     return c.NoContent(http.StatusNotFound)
   }
@@ -61,7 +62,7 @@ func postFollowHandler(c echo.Context) error {
   // フォローしてるかチェック
   var count int
 
-  err := db.Get(&count, "SELECT COUNT(*) FROM follow WHERE FollowerUserID=? AND FolloweeUserID=?", userID, follow.FolloweeUserID)
+  err := database.Db.Get(&count, "SELECT COUNT(*) FROM follow WHERE FollowerUserID=? AND FolloweeUserID=?", userID, follow.FolloweeUserID)
   if err != nil {
     return c.String(http.StatusInternalServerError, fmt.Sprintf("db error: %v", err))
   }
@@ -70,7 +71,7 @@ func postFollowHandler(c echo.Context) error {
     return c.String(http.StatusConflict, "ユーザーを既にフォローしています")
   }
 
-  db.Exec(followState, userID, follow.FolloweeUserID)
+  database.Db.Exec(followState, userID, follow.FolloweeUserID)
   return c.JSON(http.StatusOK, follow)
 }
 
@@ -80,6 +81,6 @@ func deleteFollowHandler(c echo.Context) error {
 
   tweetState := "DELETE FROM follow WHERE FollowerUserID = ? AND FolloweeUserID = ?"
 
-  db.Exec(tweetState, userID, followeeUserID)
+  database.Db.Exec(tweetState, userID, followeeUserID)
   return c.NoContent(http.StatusOK)
 }

@@ -1,9 +1,11 @@
-package main
+package router
 
 import (
   "net/http"
 
   "github.com/labstack/echo/v4"
+  
+  "github.com/flag3/SNS/database"
 
   _ "github.com/go-sql-driver/mysql"
 
@@ -19,7 +21,7 @@ func getTweetHandler(c echo.Context) error {
   userID := c.Param("userID")
 
   tweets := []Tweet{}
-  db.Select(&tweets, "SELECT * FROM tweet WHERE UserID=?", userID)
+  database.Db.Select(&tweets, "SELECT * FROM tweet WHERE UserID=?", userID)
   if tweets == nil {
     return c.NoContent(http.StatusNotFound)
   }
@@ -41,7 +43,7 @@ func postTweetHandler(c echo.Context) error {
     return c.String(http.StatusBadRequest, "empty string")
   }
 
-  db.Exec(tweetState, userID, tweet.Body)
+  database.Db.Exec(tweetState, userID, tweet.Body)
   return c.JSON(http.StatusOK, tweet)
 }
 
@@ -51,7 +53,7 @@ func deleteTweetHandler(c echo.Context) error {
 
   tweetState := "DELETE FROM tweet WHERE TweetID = ? AND userID = ?"
 
-  db.Exec(tweetState, tweetID, userID)
+  database.Db.Exec(tweetState, tweetID, userID)
   return c.NoContent(http.StatusOK)
 }
 

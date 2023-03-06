@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
   "fmt"
@@ -8,7 +8,9 @@ import (
   "github.com/labstack/echo/v4"
   "golang.org/x/crypto/bcrypt"
 
-  _ "github.com/go-sql-driver/mysql"
+  //_ "github.com/go-sql-driver/mysql
+
+  "github.com/flag3/SNS/database"
 
 )
 
@@ -51,7 +53,7 @@ func postSignUpHandler(c echo.Context) error {
   // ユーザーの存在チェック
   var count int
 
-  err = db.Get(&count, "SELECT COUNT(*) FROM user WHERE UserID=?", req.UserID)
+  err = database.Db.Get(&count, "SELECT COUNT(*) FROM user WHERE UserID=?", req.UserID)
   if err != nil {
     return c.String(http.StatusInternalServerError, fmt.Sprintf("db error: %v", err))
   }
@@ -60,7 +62,7 @@ func postSignUpHandler(c echo.Context) error {
     return c.String(http.StatusConflict, "ユーザーが既に存在しています")
   }
 
-  _, err = db.Exec("INSERT INTO user (UserID, Username, HashedPass) VALUES (?, ?, ?)", req.UserID, req.UserID, hashedPass)
+  _, err = database.Db.Exec("INSERT INTO user (UserID, Username, HashedPass) VALUES (?, ?, ?)", req.UserID, req.UserID, hashedPass)
   if err != nil {
     return c.String(http.StatusInternalServerError, fmt.Sprintf("db error: %v", err))
   }
@@ -72,7 +74,7 @@ func postLoginHandler(c echo.Context) error {
   c.Bind(&req)
 
   user := User{}
-  err := db.Get(&user, "SELECT * FROM user WHERE UserID=?", req.UserID)
+  err := database.Db.Get(&user, "SELECT * FROM user WHERE UserID=?", req.UserID)
   if err != nil {
     return c.String(http.StatusInternalServerError, fmt.Sprintf("db error: %v", err))
   }

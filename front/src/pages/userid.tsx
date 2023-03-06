@@ -51,7 +51,7 @@ function Tweet() {
                 <button
                   type="submit"
                   onClick={() => {
-                    axios.post("/api/likes", {
+                    axios.post("/api/like", {
                       tweetid: tweet.tweetid,
                     });
                   }}
@@ -61,7 +61,7 @@ function Tweet() {
                 <button
                   type="submit"
                   onClick={() => {
-                    let url = "/api/delete/likes/";
+                    let url = "/api/delete/like/";
                     url += tweet.tweetid;
                     axios.delete(url);
                   }}
