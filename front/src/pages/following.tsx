@@ -19,11 +19,11 @@ function Following() {
   return (
     <div>
       <h2>{userID}さんがフォロー中</h2>
-      {accountInfo.map((account: { userid: string; username: string }) => {
+      {accountInfo.map((account: { userID: string; username: string }) => {
         return (
-          <div key={account.userid}>
+          <div key={account.userID}>
             <br></br>
-            <div>ユーザーID：{account.userid}</div>
+            <div>ユーザーID：{account.userID}</div>
             <div>表示名：{account.username}</div>
           </div>
         );

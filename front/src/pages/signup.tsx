@@ -2,30 +2,30 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 
 function Signup() {
-  const [userid, setUserid] = useState("");
+  const [userID, setUserID] = useState("");
   const [password, setPassword] = useState("");
 
   const onClickHandler = useCallback(
     (e) => {
       e.preventDefault();
       axios.post("/api/signup", {
-        userid: userid,
+        userID: userID,
         password: password,
       });
     },
-    [userid, password]
+    [userID, password]
   );
 
   return (
     <div>
       <form>
         <div>
-          <label htmlFor="userid">Username: </label>
+          <label htmlFor="userID">Username: </label>
           <input
             type="text"
-            id="userid"
-            value={userid}
-            onChange={(e) => setUserid(e.target.value)}
+            id="userID"
+            value={userID}
+            onChange={(e) => setUserID(e.target.value)}
           ></input>
         </div>
         <div>

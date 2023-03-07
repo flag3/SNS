@@ -2,7 +2,6 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 
 function Tweet() {
-  //const [userid, setUserid] = useState("");
   const [body, setBody] = useState("");
 
   const onClickHandler = useCallback(

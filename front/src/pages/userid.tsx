@@ -23,7 +23,7 @@ function Tweet() {
         type="submit"
         onClick={() => {
           axios.post("/api/follow", {
-            followeeuserid: userID,
+            followeeUserID: userID,
           });
         }}
       >
@@ -32,7 +32,7 @@ function Tweet() {
       <button
         type="submit"
         onClick={() => {
-          let url = "/api/delete/follow/";
+          let url = "/api/follow/";
           url += userID;
           axios.delete(url);
         }}
@@ -40,19 +40,19 @@ function Tweet() {
         フォロー解除する
       </button>
       {tweetInfo.map(
-        (tweet: { tweetid: number; userid: string; body: string }) => {
+        (tweet: { tweetID: number; userID: string; body: string }) => {
           return (
-            <div key={tweet.tweetid}>
+            <div key={tweet.tweetID}>
               <br></br>
-              <div>番号：{tweet.tweetid}</div>
-              <div>ID：{tweet.userid}</div>
+              <div>番号：{tweet.tweetID}</div>
+              <div>ID：{tweet.userID}</div>
               <div>
                 ツイート：{tweet.body}
                 <button
                   type="submit"
                   onClick={() => {
                     axios.post("/api/like", {
-                      tweetid: tweet.tweetid,
+                      tweetID: tweet.tweetID,
                     });
                   }}
                 >
@@ -61,8 +61,8 @@ function Tweet() {
                 <button
                   type="submit"
                   onClick={() => {
-                    let url = "/api/delete/like/";
-                    url += tweet.tweetid;
+                    let url = "/api/like/";
+                    url += tweet.tweetID;
                     axios.delete(url);
                   }}
                 >
@@ -71,8 +71,8 @@ function Tweet() {
                 <button
                   type="submit"
                   onClick={() => {
-                    let url = "/api/delete/tweet/";
-                    url += tweet.tweetid;
+                    let url = "/api/tweet/";
+                    url += tweet.tweetID;
                     axios.delete(url);
                   }}
                 >
