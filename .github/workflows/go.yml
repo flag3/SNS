@@ -25,7 +25,13 @@ jobs:
 
       - name: Test
         run: go test -v ./...
-
-      - name: Fmt
-        uses: actions/checkout@v3
-        run: go fmt -v ./...
+  gofmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: go fmt ./...
+      - run: |
+          if [ -n "$(git diff --exit-code)" ]; then
+            echo "Code was not formatted with go fmt"
+            exit 1
+          fi
