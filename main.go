@@ -18,12 +18,12 @@ var (
 )
 
 func main() {
-	fmt.Println("string")
-	database.Connect()
+fmt.Println("string")
+database.Connect()
 
-	e := echo.New()
-	e.Use(middleware.Logger())
-	e.Use(session.Middleware(database.Store))
+e := echo.New()
+e.Use(middleware.Logger())
+e.Use(session.Middleware(database.Store))
 
-	router.NewServer(e)
+router.NewServer(e)
 }
