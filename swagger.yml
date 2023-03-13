@@ -1,0 +1,205 @@
+openapi: 3.0.3
+info:
+  version: 1.0.11
+  title: SNS
+  description: twitter now
+servers:
+  - url: http://localhost:5173/
+paths:
+  /signup:
+    post:
+      tags:
+        - login
+      summary: ユーザー登録
+      description: ユーザーを登録する
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                  example: _ymdtr_
+                password:
+                  type: string
+                  format: password
+                  example: a
+              required:
+                - userid
+                - password
+      responses:
+        "200":
+          description: 正常に登録される
+        "400":
+          description: 項目が空です
+        "409":
+          description: ユーザーが既に存在しています
+  /login:
+    post:
+      tags:
+        - login
+      summary: ログイン
+      description: ログインする
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                  example: _ymdtr_
+                password:
+                  type: string
+                  format: password
+                  example: a
+              required:
+                - userid
+                - password
+      responses:
+        "200":
+          description: ログインに成功する
+        "403":
+          description: パスワードが間違っている
+        "500":
+          description: 何かエラーが返ってくる
+  /whoami:
+    get:
+      tags:
+        - login
+      summary: ログインの確認
+      description: 君誰
+      responses:
+        "200":
+          description: ログイン中
+  /logout:
+    get:
+      tags:
+        - login
+      summary: ログアウトする
+      description: 君誰
+      responses:
+        "200":
+          description: ログアウトに成功する
+        "500":
+          description: 何かエラーが返ってくる
+  /:userID:
+    get:
+      tags:
+        - user
+      summary: ユーザーのツイートを獲得する
+      description: 何ツイートしてるの
+      responses:
+        "200":
+          description: ツイートが取得できる
+        "404":
+          description: 何かエラーが返ってくる
+  /:userID/following:
+    get:
+      tags:
+        - user
+      summary: ユーザーがフォローしているIDを取得する
+      description: 誰フォローしてるの
+      responses:
+        "200":
+          description: フォローの一覧が取得できる
+        "404":
+          description: 何かエラーが返ってくる
+  /:userID/followers:
+    get:
+      tags:
+        - user
+      summary: ユーザーのフォロワーのIDを取得する
+      description: 誰がフォロワーなの
+      responses:
+        "200":
+          description: フォロワーの一覧が取得できる
+        "404":
+          description: 何かエラーが返ってくる
+  /:userID/likes:
+    get:
+      tags:
+        - user
+      summary: ユーザーのいいねしているツイートを取得する
+      description: 何いいねしているの
+      responses:
+        "200":
+          description: いいねしているツイートが取得できる
+        "404":
+          description: 何かエラーが返ってくる
+  /tweet:
+    post:
+      tags:
+        - post
+      summary: ツイート
+      description: ツイートする
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+                  example: は？俺は全強
+              required:
+                - body
+      responses:
+        "200":
+          description: ツイートに成功する
+        "400":
+          description: 何かエラーが返ってくる
+  /like:
+    post:
+      tags:
+        - post
+      summary: いいね
+      description: いいねする
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tweetid:
+                  type: number
+                  example: 1
+              required:
+                - tweetid
+      responses:
+        "200":
+          description: いいねに成功する
+        "400":
+          description: 何かエラーが返ってくる
+        "409":
+          description: 既にいいねしている
+  /follow:
+    post:
+      tags:
+        - post
+      summary: フォロー
+      description: フォローする
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                followeeuserid:
+                  type: string
+                  example: "sobaya007"
+              required:
+                - followeeuserid
+      responses:
+        "200":
+          description: フォローに成功する
+        "400":
+          description: 何かエラーが返ってくる
+        "409":
+          description: 既にフォローしている
