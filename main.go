@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -18,7 +16,6 @@ var (
 )
 
 func main() {
-	fmt.Println("string")
 	database.Connect()
 
 	e := echo.New()
