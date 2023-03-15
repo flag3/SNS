@@ -2,28 +2,28 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 
 function Tweet() {
-  const [body, setBody] = useState("");
+  const [content, setContent] = useState("");
 
   const onClickHandler = useCallback(
     (e) => {
       e.preventDefault();
       axios.post("/api/tweet", {
-        body: body,
+        content: content,
       });
     },
-    [body]
+    [content]
   );
 
   return (
     <div>
       <form>
         <div>
-          <label htmlFor="body">ツイート内容: </label>
+          <label htmlFor="content">ツイート内容: </label>
           <input
             type="text"
-            id="body"
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
+            id="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
           ></input>
         </div>
         <div>

@@ -29,7 +29,7 @@ CREATE TABLE `favorite` (
   PRIMARY KEY (`FavoriteID`)
 ) ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `follow`
+DROP TABLE IF EXISTS `follow`;
 CREATE TABLE `follow` ( 
   `FollowID` int NOT NULL AUTO_INCREMENT, 
   `FollowerUserID` VARCHAR(30) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE `follow` (
   PRIMARY KEY (`FollowID`)
 ) ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `retweet`
+DROP TABLE IF EXISTS `retweet`;
 CREATE TABLE `retweet` ( 
   `RetweetID` int NOT NULL AUTO_INCREMENT,
   `UserID` VARCHAR(30) NOT NULL, 

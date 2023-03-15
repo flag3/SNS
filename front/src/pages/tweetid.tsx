@@ -30,14 +30,14 @@ function Tweet() {
         フォローする
       </button>
       {tweetInfo.map(
-        (tweet: { tweetid: number; userid: string; body: string }) => {
+        (tweet: { tweetid: number; userid: string; content: string }) => {
           return (
             <div key={tweet.tweetid}>
               <br></br>
               <div>番号：{tweet.tweetid}</div>
               <div>ID：{tweet.userid}</div>
               <div>
-                ツイート：{tweet.body}
+                ツイート：{tweet.content}
                 <button
                   type="submit"
                   onClick={() => {

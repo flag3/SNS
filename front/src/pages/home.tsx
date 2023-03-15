@@ -20,13 +20,13 @@ function Favorite() {
     <div>
       <h2>ホーム</h2>
       {tweetInfo.map(
-        (tweet: { tweetID: number; userID: string; body: string }) => {
+        (tweet: { tweetID: number; userID: string; content: string }) => {
           return (
             <div key={tweet.tweetID}>
               <br></br>
               <div>番号：{tweet.tweetID}</div>
               <div>ID：{tweet.userID}</div>
-              <div>ツイート：{tweet.body}</div>
+              <div>ツイート：{tweet.content}</div>
             </div>
           );
         }
