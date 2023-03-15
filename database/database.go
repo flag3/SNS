@@ -23,14 +23,15 @@ func Connect() {
 		log.Fatalf("Cannot Connect to Database: %s", err)
 	}
 	c := mysql.Config{
-		DBName:    os.Getenv("DB_DATABASE"),
-		User:      os.Getenv("DB_USERNAME"),
-		Passwd:    os.Getenv("DB_PASSWORD"),
-		Addr:      os.Getenv("DB_HOSTNAME") + ":" + os.Getenv("DB_PORT"),
-		Net:       "tcp",
-		ParseTime: true,
-		Collation: "utf8mb4_unicode_ci",
-		Loc:       jst,
+		DBName:               os.Getenv("DB_DATABASE"),
+		User:                 os.Getenv("DB_USERNAME"),
+		Passwd:               os.Getenv("DB_PASSWORD"),
+		Addr:                 os.Getenv("DB_HOSTNAME") + ":" + os.Getenv("DB_PORT"),
+		Net:                  "tcp",
+		ParseTime:            true,
+		Collation:            "utf8mb4_unicode_ci",
+		Loc:                  jst,
+		AllowNativePasswords: true,
 	}
 	_DB, err := sqlx.Connect("mysql", c.FormatDSN())
 	if err != nil {

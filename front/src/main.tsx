@@ -12,6 +12,7 @@ import Following from "./pages/following";
 import Followers from "./pages/followers";
 import UserID from "./pages/userid";
 import Home from "./pages/home";
+import Users from "./pages/users";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -67,6 +68,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           element={
             <PrivateRoute>
               <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <PrivateRoute>
+              <Users />
             </PrivateRoute>
           }
         />

@@ -1,23 +1,34 @@
 import axios from "axios";
 import { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [userID, setUserID] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const onClickHandler = useCallback(
     (e) => {
       e.preventDefault();
-      axios.post("/api/signup", {
-        userID: userID,
-        password: password,
-      });
+      axios
+        .post("/api/signup", {
+          userID: userID,
+          password: password,
+        })
+        .then(() => {
+          navigate("/login");
+        })
+        .catch((error) => {
+          setErrorMessage(error.response.data);
+        });
     },
     [userID, password]
   );
 
   return (
     <div>
+      <h1>登録</h1>
       <form>
         <div>
           <label htmlFor="userID">Username: </label>
@@ -41,6 +52,10 @@ function Signup() {
           <button type="submit" onClick={onClickHandler}>
             Signup
           </button>
+          {
+            errorMessage && <p>{errorMessage}</p>
+            // errorMessage が空でない場合 <p>{errorMessage}</p> を返す
+          }
         </div>
       </form>
     </div>

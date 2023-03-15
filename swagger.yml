@@ -89,7 +89,7 @@ paths:
   /:userID:
     get:
       tags:
-        - user
+        - tweet
       summary: ユーザーのツイートを獲得する
       description: 何ツイートしてるの
       responses:
@@ -100,7 +100,7 @@ paths:
   /:userID/following:
     get:
       tags:
-        - user
+        - follow
       summary: ユーザーがフォローしているIDを取得する
       description: 誰フォローしてるの
       responses:
@@ -111,7 +111,7 @@ paths:
   /:userID/followers:
     get:
       tags:
-        - user
+        - follow
       summary: ユーザーのフォロワーのIDを取得する
       description: 誰がフォロワーなの
       responses:
@@ -122,7 +122,7 @@ paths:
   /:userID/likes:
     get:
       tags:
-        - user
+        - like
       summary: ユーザーのいいねしているツイートを取得する
       description: 何いいねしているの
       responses:
@@ -133,7 +133,7 @@ paths:
   /tweet:
     post:
       tags:
-        - post
+        - tweet
       summary: ツイート
       description: ツイートする
       requestBody:
@@ -153,10 +153,22 @@ paths:
           description: ツイートに成功する
         "400":
           description: 何かエラーが返ってくる
+  /tweet/:tweetID:
+    delete:
+      tags:
+        - tweet
+      summary: ツイート
+      description: ツイートを削除する
+      responses:
+        "200":
+          description: ツイートに成功する
+        "400":
+          description: 何かエラーが返ってくる
+
   /like:
     post:
       tags:
-        - post
+        - like
       summary: いいね
       description: いいねする
       requestBody:
@@ -178,10 +190,19 @@ paths:
           description: 何かエラーが返ってくる
         "409":
           description: 既にいいねしている
+  /like/:tweetID:
+    delete:
+      tags:
+        - like
+      summary: いいね
+      description: いいねを取り消す
+      responses:
+        "200":
+          description: いいねの取り消しに成功する
   /follow:
     post:
       tags:
-        - post
+        - follow
       summary: フォロー
       description: フォローする
       requestBody:
@@ -203,3 +224,23 @@ paths:
           description: 何かエラーが返ってくる
         "409":
           description: 既にフォローしている
+  /follow/:followeeUserID:
+    delete:
+      tags:
+        - follow
+      summary: フォロー
+      description: フォローを取り消す
+      responses:
+        "200":
+          description: フォローの取り消しに成功する
+  /home:
+    get:
+      tags:
+        - tweet
+      summary: ホーム
+      description: ホームのツイートを獲得する
+      responses:
+        "200":
+          description: ツイートが取得できる
+        "404":
+          description: 何かエラーが返ってくる

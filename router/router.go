@@ -11,6 +11,7 @@ func NewServer(e *echo.Echo) {
 	withLogin := e.Group("")
 	withLogin.Use(checkLogin)
 
+	withLogin.GET("/users", getUsersHandler)
 	withLogin.GET("/:userID", getTweetHandler)
 	withLogin.GET("/:userID/following", getFollowingHandler)
 	withLogin.GET("/:userID/followers", getFollowersHandler)
