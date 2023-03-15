@@ -62,7 +62,9 @@ func getHomeTweetHandler(c echo.Context) error {
 	userID := c.Get("userID").(string)
 
 	tweets := []Tweet{}
-	database.DB.Select(&tweets, "SELECT tweet.* FROM tweet JOIN follow ON tweet.UserID = follow.FolloweeUserID where follow.FollowerUserID = ? OR UserID = ?", userID, userID)
+	database.DB.Select(&tweets,
+		"SELECT tweet.TweetID, tweet.UserID, tweet.Content FROM tweet LEFT JOIN follow ON tweet.UserID = follow.FolloweeUserID AND follow.FollowerUserID = ? WHERE tweet.UserID = ? OR follow.FolloweeUserID IS NOT NULL",
+		userID, userID)
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)
 	}
