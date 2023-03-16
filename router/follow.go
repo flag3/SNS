@@ -11,58 +11,35 @@ import (
 )
 
 type Follow struct {
-	FollowID       int    `json:"followID,omitempty"  db:"FollowID"  form:"followID"`
-	FollowerUserID string `json:"followerUserID,omitempty"  db:"FollowerUserID"  form:"followerUserID"`
-	FolloweeUserID string `json:"followeeUserID,omitempty"  db:"FolloweeUserID"  form:"followeeUserID"`
+	FollowID       int `json:"followID,omitempty"  db:"FollowID"  form:"followID"`
+	FollowerUserID int `json:"followerUserID,omitempty"  db:"FollowerUserID"  form:"followerUserID"`
+	FolloweeUserID int `json:"followeeUserID,omitempty"  db:"FolloweeUserID"  form:"followeeUserID"`
 }
 
 type Account struct {
-	UserID   string `json:"userID,omitempty"  db:"UserID"`
-	Username string `json:"username,omitempty"  db:"Username"`
-}
-
-func getFollowingHandler(c echo.Context) error {
-	userID := c.Param("userID")
-
-	accounts := []Account{}
-
-	database.DB.Select(&accounts, "SELECT UserID, Username FROM user JOIN follow ON UserID = FolloweeUserID WHERE FollowerUserID=?", userID)
-	if accounts == nil {
-		return c.NoContent(http.StatusNotFound)
-	}
-	fmt.Println(accounts)
-
-	return c.JSON(http.StatusOK, accounts)
-}
-
-func getFollowersHandler(c echo.Context) error {
-	userID := c.Param("userID")
-
-	accounts := []Account{}
-
-	database.DB.Select(&accounts, "SELECT UserID, Username FROM user JOIN follow ON UserID = FollowerUserID WHERE FolloweeUserID=?", userID)
-	if accounts == nil {
-		return c.NoContent(http.StatusNotFound)
-	}
-	fmt.Println(accounts)
-
-	return c.JSON(http.StatusOK, accounts)
+	ID          int    `json:"id,omitempty"  db:"ID"`
+	Name        string `json:"name,omitempty"  db:"Name"`
+	DisplayName string `json:"displayName,omitempty"  db:"DisplayName"`
 }
 
 func postFollowHandler(c echo.Context) error {
-	userID := c.Get("userID").(string)
+	followerUsername := c.Get("username").(string)
+	followeeUsername := c.Param("username")
 
 	follow := Follow{}
 	followState := "INSERT INTO follow (FollowerUserID, FolloweeUserID) VALUES (?, ?)"
 
-	if err := c.Bind(&follow); err != nil {
-		return c.JSON(http.StatusBadRequest, follow)
+	var followerUserID, followeeUserID int
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", followerUsername).Scan(&followerUserID); err != nil {
+		return c.JSON(http.StatusBadRequest, followerUserID)
+	}
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", followeeUsername).Scan(&followeeUserID); err != nil {
+		return c.JSON(http.StatusBadRequest, followeeUserID)
 	}
 
 	// フォローしてるかチェック
 	var count int
-
-	err := database.DB.Get(&count, "SELECT COUNT(*) FROM follow WHERE FollowerUserID=? AND FolloweeUserID=?", userID, follow.FolloweeUserID)
+	err := database.DB.Get(&count, "SELECT COUNT(*) FROM follow WHERE FollowerUserID=? AND FolloweeUserID=?", followerUserID, followeeUserID)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("db error: %v", err))
 	}
@@ -71,16 +48,62 @@ func postFollowHandler(c echo.Context) error {
 		return c.String(http.StatusConflict, "ユーザーを既にフォローしています")
 	}
 
-	database.DB.Exec(followState, userID, follow.FolloweeUserID)
+	database.DB.Exec(followState, followerUserID, followeeUserID)
 	return c.JSON(http.StatusOK, follow)
 }
 
 func deleteFollowHandler(c echo.Context) error {
-	followeeUserID := c.Param("followeeUserID")
-	userID := c.Get("userID").(string)
+	followerUsername := c.Get("username").(string)
+	followeeUsername := c.Param("username")
 
-	tweetState := "DELETE FROM follow WHERE FollowerUserID = ? AND FolloweeUserID = ?"
+	var followerUserID, followeeUserID int
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", followerUsername).Scan(&followerUserID); err != nil {
+		return c.JSON(http.StatusBadRequest, followerUserID)
+	}
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", followeeUsername).Scan(&followeeUserID); err != nil {
+		return c.JSON(http.StatusBadRequest, followeeUserID)
+	}
 
-	database.DB.Exec(tweetState, userID, followeeUserID)
+	followState := "DELETE FROM follow WHERE FollowerUserID = ? AND FolloweeUserID = ?"
+
+	database.DB.Exec(followState, followerUserID, followeeUserID)
 	return c.NoContent(http.StatusOK)
+}
+
+func getFollowingHandler(c echo.Context) error {
+	username := c.Param("username")
+
+	users := []User{}
+
+	var userID int
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
+		return c.JSON(http.StatusBadRequest, userID)
+	}
+
+	database.DB.Select(&users, "SELECT UserID, Username, DisplayName, Bio FROM user JOIN follow ON UserID = FolloweeUserID WHERE FollowerUserID=?", userID)
+	if users == nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+	fmt.Println(users)
+
+	return c.JSON(http.StatusOK, users)
+}
+
+func getFollowersHandler(c echo.Context) error {
+	username := c.Param("username")
+
+	users := []User{}
+
+	var userID int
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
+		return c.JSON(http.StatusBadRequest, userID)
+	}
+
+	database.DB.Select(&users, "SELECT UserID, Username FROM user JOIN follow ON UserID = FollowerUserID WHERE FolloweeUserID=?", userID)
+	if users == nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+	fmt.Println(users)
+
+	return c.JSON(http.StatusOK, users)
 }

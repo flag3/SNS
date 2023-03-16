@@ -1,6 +1,7 @@
 package router
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,18 +12,17 @@ import (
 )
 
 type Tweet struct {
-	TweetID int    `json:"tweetID,omitempty"  db:"TweetID"  form:"tweetID"`
-	UserID  string `json:"userID,omitempty"  db:"UserID"  form:"userID"`
-	Content string `json:"content,omitempty"  db:"Content"  form:"content"`
-	Reply   string `json:"reply,omitempty"  db:"Reply"  form:"reply"`
-	Quote   string `json:"quote,omitempty"  db:"Quote"  form:"quote"`
+	TweetID int           `json:"tweetID,omitempty"  db:"TweetID"  form:"tweetID"`
+	UserID  int           `json:"userID,omitempty"  db:"UserID"  form:"userID"`
+	Content string        `json:"content,omitempty"  db:"Content"  form:"content"`
+	Reply   sql.NullInt64 `json:"reply,omitempty"  db:"Reply"  form:"reply"`
+	Quote   sql.NullInt64 `json:"quote,omitempty"  db:"Quote"  form:"quote"`
 }
 
-func getTweetHandler(c echo.Context) error {
-	userID := c.Param("userID")
-
+func getTweetsHandler(c echo.Context) error {
 	tweets := []Tweet{}
-	database.DB.Select(&tweets, "SELECT TweetID, UserID, Content FROM tweet WHERE UserID=?", userID)
+
+	database.DB.Select(&tweets, "SELECT * FROM tweet")
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)
 	}
@@ -30,8 +30,8 @@ func getTweetHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, tweets)
 }
 
-func postTweetHandler(c echo.Context) error {
-	userID := c.Get("userID").(string)
+func postTweetsHandler(c echo.Context) error {
+	username := c.Get("username").(string)
 
 	tweet := Tweet{}
 	tweetState := "INSERT INTO tweet (UserID, Content) VALUES (?, ?)"
@@ -40,28 +40,76 @@ func postTweetHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, tweet)
 	}
 
+	var userID int
+
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
+		return c.JSON(http.StatusBadRequest, userID)
+	}
+
 	if tweet.Content == "" {
 		return c.String(http.StatusBadRequest, "empty string")
 	}
 
 	database.DB.Exec(tweetState, userID, tweet.Content)
-	return c.JSON(http.StatusOK, tweet)
+	return c.JSON(http.StatusCreated, tweet)
+}
+
+func getTweetHandler(c echo.Context) error {
+	tweetID := c.Param("tweetID")
+
+	tweets := []Tweet{}
+
+	database.DB.Select(&tweets, "SELECT * FROM tweet WHERE TweetID = ?", tweetID)
+	if tweets == nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	return c.JSON(http.StatusOK, tweets)
 }
 
 func deleteTweetHandler(c echo.Context) error {
 	tweetID := c.Param("tweetID")
-	userID := c.Get("userID").(string)
+	username := c.Get("username").(string)
 
 	tweetState := "DELETE FROM tweet WHERE TweetID = ? AND userID = ?"
+
+	var userID int
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
+		return c.JSON(http.StatusBadRequest, userID)
+	}
 
 	database.DB.Exec(tweetState, tweetID, userID)
 	return c.NoContent(http.StatusOK)
 }
 
-func getHomeTweetHandler(c echo.Context) error {
-	userID := c.Get("userID").(string)
+func getUserTweetsHandler(c echo.Context) error {
+	username := c.Param("username")
 
 	tweets := []Tweet{}
+
+	var userID int
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
+		return c.JSON(http.StatusBadRequest, userID)
+	}
+
+	database.DB.Select(&tweets, "SELECT * FROM tweet WHERE UserID=?", userID)
+	if tweets == nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	return c.JSON(http.StatusOK, tweets)
+}
+
+func getHomeTweetHandler(c echo.Context) error {
+	username := c.Get("username").(string)
+
+	tweets := []Tweet{}
+
+	var userID int
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
+		return c.JSON(http.StatusBadRequest, userID)
+	}
+
 	database.DB.Select(&tweets,
 		"SELECT tweet.TweetID, tweet.UserID, tweet.Content FROM tweet LEFT JOIN follow ON tweet.UserID = follow.FolloweeUserID AND follow.FollowerUserID = ? WHERE tweet.UserID = ? OR follow.FolloweeUserID IS NOT NULL",
 		userID, userID)
@@ -70,5 +118,4 @@ func getHomeTweetHandler(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, tweets)
-
 }

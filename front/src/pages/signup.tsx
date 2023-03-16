@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Signup() {
-  const [userID, setUserID] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ function Signup() {
       e.preventDefault();
       axios
         .post("/api/signup", {
-          userID: userID,
+          username: username,
           password: password,
         })
         .then(() => {
@@ -23,7 +23,7 @@ function Signup() {
           setErrorMessage(error.response.data);
         });
     },
-    [userID, password]
+    [username, password]
   );
 
   return (
@@ -31,12 +31,12 @@ function Signup() {
       <h1>登録</h1>
       <form>
         <div>
-          <label htmlFor="userID">Username: </label>
+          <label htmlFor="username">Username: </label>
           <input
             type="text"
-            id="userID"
-            value={userID}
-            onChange={(e) => setUserID(e.target.value)}
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           ></input>
         </div>
         <div>
@@ -52,10 +52,7 @@ function Signup() {
           <button type="submit" onClick={onClickHandler}>
             Signup
           </button>
-          {
-            errorMessage && <p>{errorMessage}</p>
-            // errorMessage が空でない場合 <p>{errorMessage}</p> を返す
-          }
+          {errorMessage && <p>{errorMessage}</p>}
         </div>
       </form>
     </div>

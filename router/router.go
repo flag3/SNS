@@ -12,20 +12,28 @@ func NewServer(e *echo.Echo) {
 	withLogin.Use(checkLogin)
 
 	withLogin.GET("/users", getUsersHandler)
-	withLogin.GET("/:userID", getTweetHandler)
-	withLogin.GET("/:userID/following", getFollowingHandler)
-	withLogin.GET("/:userID/followers", getFollowersHandler)
-	withLogin.GET("/:userID/likes", getFavoriteHandler)
+	withLogin.GET("/users/:username", getUserHandler)
+
+	withLogin.GET("/tweets", getTweetsHandler)
+	withLogin.POST("/tweets", postTweetsHandler)
+
+	withLogin.GET("/tweets/:tweetID", getTweetHandler)
+	//withLogin.PUT("/tweets/:tweetID", postTweetHandler)
+	withLogin.DELETE("/tweets/:tweetID", deleteTweetHandler)
+	withLogin.GET("/users/:username/tweets", getUserTweetsHandler)
 	withLogin.GET("/home", getHomeTweetHandler)
-	withLogin.POST("/tweet", postTweetHandler)
-	withLogin.POST("/like", postFavoriteHandler)
-	withLogin.POST("/follow", postFollowHandler)
+
+	withLogin.POST("/tweets/:tweetID/likes", postLikeHandler)
+	withLogin.DELETE("/tweets/:tweetID/likes", deleteLikeHandler)
+	withLogin.GET("/users/:username/likes", getUserLikesHandler)
+
+	withLogin.POST("/users/:username/follows", postFollowHandler)
+	withLogin.DELETE("/users/:username/follows", deleteFollowHandler)
+	withLogin.GET("/users/:username/following", getFollowingHandler)
+	withLogin.GET("/users/:username/followers", getFollowersHandler)
+
 	withLogin.GET("/whoami", getWhoAmIHandler)
 	withLogin.GET("/logout", getLogoutHandler)
-
-	withLogin.DELETE("/tweet/:tweetID", deleteTweetHandler)
-	withLogin.DELETE("/follow/:followeeUserID", deleteFollowHandler)
-	withLogin.DELETE("/like/:tweetID", deleteFavoriteHandler)
 
 	e.Start(":4000")
 }

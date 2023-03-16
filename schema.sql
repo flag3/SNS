@@ -5,42 +5,46 @@ USE `sns`;
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` ( 
-  `UserID` VARCHAR(30) NOT NULL,
-  `Username` VARCHAR(30) NOT NULL,
+  `UserID` int NOT NULL AUTO_INCREMENT,
+  `Username` VARCHAR(15) NOT NULL,
+  `DisplayName` VARCHAR(50) NOT NULL,
   `HashedPass` VARCHAR(200) NOT NULL,
+  `Bio` VARCHAR(160),
+  `Location` VARCHAR(30),
+  `Website` VARCHAR(100),
   PRIMARY KEY (`UserID`)
 ) ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `tweet`;
 CREATE TABLE `tweet` (
   `TweetID` int NOT NULL AUTO_INCREMENT,
-  `UserID` VARCHAR(30) NOT NULL,
+  `UserID` int NOT NULL,
   `Content` VARCHAR(140) NOT NULL,
   `Reply` int,
   `Quote` int,
   PRIMARY KEY (`TweetID`)
 ) ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `favorite`;
-CREATE TABLE `favorite` (
-  `FavoriteID`  int NOT NULL AUTO_INCREMENT, 
+DROP TABLE IF EXISTS `fav`;
+CREATE TABLE `fav` (
+  `LikeID`  int NOT NULL AUTO_INCREMENT, 
   `TweetID` int NOT NULL,
-  `UserID`  VARCHAR(30) NOT NULL,
-  PRIMARY KEY (`FavoriteID`)
+  `UserID`  int NOT NULL,
+  PRIMARY KEY (`LikeID`)
 ) ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `follow`;
 CREATE TABLE `follow` ( 
   `FollowID` int NOT NULL AUTO_INCREMENT, 
-  `FollowerUserID` VARCHAR(30) NOT NULL,
-  `FolloweeUserID` VARCHAR(30) NOT NULL,
+  `FollowerUserID` int NOT NULL,
+  `FolloweeUserID` int NOT NULL,
   PRIMARY KEY (`FollowID`)
 ) ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `retweet`;
 CREATE TABLE `retweet` ( 
   `RetweetID` int NOT NULL AUTO_INCREMENT,
-  `UserID` VARCHAR(30) NOT NULL, 
+  `UserID` int NOT NULL, 
   `TweetID` int NOT NULL, 
   PRIMARY KEY (`RetweetID`)
 ) ENGINE = InnoDB;

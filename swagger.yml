@@ -2,10 +2,231 @@ openapi: 3.0.3
 info:
   version: 1.0.11
   title: SNS
-  description: twitter now
+  description: twitter
+  contact:
+    name: flag3
+    url: https://github.com/flag3/SNS
 servers:
   - url: http://localhost:5173/
+    description: local
 paths:
+  /users:
+    get:
+      summary: ユーザーのリストを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ユーザー情報の配列
+                items:
+                  $ref: "#/components/schemas/User"
+        "404":
+          description: Not Found
+      operationId: getUsers
+      tags:
+        - user
+      description: ユーザーのリストを取得します
+  /users/{username}:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    get:
+      summary: ユーザー詳細情報を取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ユーザー詳細情報の配列
+                items:
+                  $ref: "#/components/schemas/UserDetail"
+        "404":
+          description: Not Found
+      operationId: getUser
+      tags:
+        - user
+      description: 指定したユーザーの詳細情報を取得します
+  /tweets:
+    get:
+      summary: ツイートを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ツイートの配列
+                items:
+                  $ref: "#/components/schemas/Tweet"
+        "404":
+          description: Not Found
+      operationId: getTweets
+      tags:
+        - tweet
+      description: ツイートのリストを取得します
+    post:
+      summary: ツイートを投稿
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ツイート
+                items:
+                  $ref: "#/components/schemas/Tweet"
+        "400":
+          description: BadRequest
+      operationId: postTweets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tweet"
+      tags:
+        - tweet
+  /tweets/{tweetID}:
+    parameters:
+      - $ref: "#/components/parameters/tweetIDInPath"
+    get:
+      summary: 指定したツイートを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ツイートの配列
+                items:
+                  $ref: "#/components/schemas/Tweet"
+        "404":
+          description: Not Found
+      operationId: getTweet
+      tags:
+        - tweet
+      description: 指定したツイートを取得します
+    delete:
+      summary: 指定したツイートを削除
+      responses:
+        "200":
+          description: OK
+      operationId: deteleTweet
+      tags:
+        - tweet
+      description: 指定したツイートを削除します
+  /users/{username}/tweets:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    get:
+      summary: 指定したユーザーのツイートを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ツイートの配列
+                items:
+                  $ref: "#/components/schemas/Tweet"
+        "404":
+          description: Not Found
+      operationId: getUserTweets
+      tags:
+        - tweet
+  /tweets/{tweetID}/likes:
+    parameters:
+      - $ref: "#/components/parameters/tweetIDInPath"
+    post:
+      summary: 指定したツイートにいいね
+      responses:
+        "201":
+          description: Created
+      operationId: postLike
+      tags:
+        - like
+      description: 指定したツイートにいいねする
+    delete:
+      summary: 指定したツイートからいいね取り消し
+      responses:
+        "200":
+          description: OK
+        "409":
+          description: Conflict
+      operationId: deleteLike
+      tags:
+        - like
+  /users/{username}/likes:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    get:
+      summary: 指定したユーザーがいいねしたツイート取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ツイートの配列
+                items:
+                  $ref: "#/components/schemas/Tweet"
+        "404":
+          description: Not Found
+      operationId: getUserLikes
+      tags:
+        - like
+  /users/{username}/follows:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    post:
+      summary: 指定したユーザーをフォロー
+      responses:
+        "201":
+          description: Created
+        "409":
+          description: Conflict
+      operationId: postFollow
+      tags:
+        - follow
+    delete:
+      summary: 指定したユーザーをフォロー解除
+      responses:
+        "200":
+          description: OK
+      operationId: deleteFollow
+      tags:
+        - follow
+  /users/{username}/following:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    get:
+      summary: 指定したユーザーがフォローしているユーザーを取得
+      responses:
+        "200":
+          description: OK
+      operationId: getFollowing
+      tags:
+        - follow
+  /users/{username}/followers:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    get:
+      summary: 指定したユーザーをフォローしているユーザーを取得
+      responses:
+        "200":
+          description: OK
+      operationId: getFollowers
+      tags:
+        - follow
+
   /signup:
     post:
       tags:
@@ -86,153 +307,6 @@ paths:
           description: ログアウトに成功する
         "500":
           description: 何かエラーが返ってくる
-  /:userID:
-    get:
-      tags:
-        - tweet
-      summary: ユーザーのツイートを獲得する
-      description: 何ツイートしてるの
-      responses:
-        "200":
-          description: ツイートが取得できる
-        "404":
-          description: 何かエラーが返ってくる
-  /:userID/following:
-    get:
-      tags:
-        - follow
-      summary: ユーザーがフォローしているIDを取得する
-      description: 誰フォローしてるの
-      responses:
-        "200":
-          description: フォローの一覧が取得できる
-        "404":
-          description: 何かエラーが返ってくる
-  /:userID/followers:
-    get:
-      tags:
-        - follow
-      summary: ユーザーのフォロワーのIDを取得する
-      description: 誰がフォロワーなの
-      responses:
-        "200":
-          description: フォロワーの一覧が取得できる
-        "404":
-          description: 何かエラーが返ってくる
-  /:userID/likes:
-    get:
-      tags:
-        - like
-      summary: ユーザーのいいねしているツイートを取得する
-      description: 何いいねしているの
-      responses:
-        "200":
-          description: いいねしているツイートが取得できる
-        "404":
-          description: 何かエラーが返ってくる
-  /tweet:
-    post:
-      tags:
-        - tweet
-      summary: ツイート
-      description: ツイートする
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                body:
-                  type: string
-                  example: は？俺は全強
-              required:
-                - body
-      responses:
-        "200":
-          description: ツイートに成功する
-        "400":
-          description: 何かエラーが返ってくる
-  /tweet/:tweetID:
-    delete:
-      tags:
-        - tweet
-      summary: ツイート
-      description: ツイートを削除する
-      responses:
-        "200":
-          description: ツイートに成功する
-        "400":
-          description: 何かエラーが返ってくる
-
-  /like:
-    post:
-      tags:
-        - like
-      summary: いいね
-      description: いいねする
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                tweetid:
-                  type: number
-                  example: 1
-              required:
-                - tweetid
-      responses:
-        "200":
-          description: いいねに成功する
-        "400":
-          description: 何かエラーが返ってくる
-        "409":
-          description: 既にいいねしている
-  /like/:tweetID:
-    delete:
-      tags:
-        - like
-      summary: いいね
-      description: いいねを取り消す
-      responses:
-        "200":
-          description: いいねの取り消しに成功する
-  /follow:
-    post:
-      tags:
-        - follow
-      summary: フォロー
-      description: フォローする
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                followeeuserid:
-                  type: string
-                  example: "sobaya007"
-              required:
-                - followeeuserid
-      responses:
-        "200":
-          description: フォローに成功する
-        "400":
-          description: 何かエラーが返ってくる
-        "409":
-          description: 既にフォローしている
-  /follow/:followeeUserID:
-    delete:
-      tags:
-        - follow
-      summary: フォロー
-      description: フォローを取り消す
-      responses:
-        "200":
-          description: フォローの取り消しに成功する
   /home:
     get:
       tags:
@@ -244,3 +318,117 @@ paths:
           description: ツイートが取得できる
         "404":
           description: 何かエラーが返ってくる
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ユーザー情報
+      properties:
+        userID:
+          type: number
+          description: ユーザー
+        username:
+          type: string
+          description: ユーザー名
+          minLength: 1
+          maxLength: 15
+        displayName:
+          type: string
+          description: ユーザー表示名
+          minLength: 1
+          maxLength: 50
+        bio:
+          type: string
+          description: 自己紹介
+          minLength: 0
+          maxLength: 160
+      required:
+        - userID
+        - username
+        - displayName
+    UserDetail:
+      title: UserDetail
+      type: object
+      description: ユーザー詳細情報
+      properties:
+        userID:
+          type: number
+          description: ユーザー
+        username:
+          type: string
+          description: ユーザー名
+          minLength: 1
+          maxLength: 15
+        displayName:
+          type: string
+          description: ユーザー表示名
+          minLength: 1
+          maxLength: 50
+        bio:
+          type: string
+          description: 自己紹介
+          minLength: 0
+          maxLength: 160
+        location:
+          type: string
+          description: 場所
+          minLength: 0
+          maxLength: 30
+        website:
+          type: string
+          description: Web
+          minLength: 0
+          maxLength: 100
+      required:
+        - userID
+        - username
+        - displayName
+    Tweet:
+      title: Tweet
+      type: object
+      description: ツイート
+      properties:
+        tweetID:
+          type: number
+          description: ツイートID
+        userID:
+          type: number
+          description: ツイートしたユーザー
+        Content:
+          type: string
+          description: ツイートの中身
+        Reply:
+          type: number
+          description: リプライするツイート
+        Quote:
+          type: number
+          description: 引用するツイート
+
+  parameters:
+    usernameInPath:
+      name: username
+      in: path
+      required: true
+      description: ユーザー名
+      schema:
+        type: string
+    tweetIDInPath:
+      name: tweetID
+      in: path
+      required: true
+      description: ツイートID
+      schema:
+        type: number
+
+tags:
+  - name: user
+    description: ユーザーAPI
+  - name: tweet
+    description: ツイートAPI
+  - name: like
+    description: いいねAPI
+  - name: follow
+    description: フォローAPI
+  - name: login
+    description: ログインAPI
