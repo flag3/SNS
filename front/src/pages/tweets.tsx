@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import ShowTweet from "./showTweet";
 
 function Tweets() {
   const [tweetList, setTweetList] = useState([]);
@@ -14,53 +15,28 @@ function Tweets() {
     console.log(tweetList);
   }, [tweetList]);
 
+  console.log(tweetList);
+
   return (
     <div>
       <h2>ツイート一覧</h2>
-      {tweetList.map(
-        (tweet: { tweetID: number; userID: string; content: string }) => {
-          return (
-            <div key={tweet.tweetID}>
-              <br></br>
-              <div>番号：{tweet.tweetID}</div>
-              <div>ID：{tweet.userID}</div>
-              <div>ツイート：{tweet.content}</div>
-              <div>
-                <button
-                  type="submit"
-                  onClick={() => {
-                    axios.post("/api/like", {
-                      tweetID: tweet.tweetID,
-                    });
-                  }}
-                >
-                  いいね
-                </button>
-                <button
-                  type="submit"
-                  onClick={() => {
-                    let url = "/api/like/";
-                    url += tweet.tweetID;
-                    axios.delete(url);
-                  }}
-                >
-                  いいね解除
-                </button>
-                <button
-                  type="submit"
-                  onClick={() => {
-                    let url = "/api/tweet/";
-                    url += tweet.tweetID;
-                    axios.delete(url);
-                  }}
-                >
-                  消す
-                </button>
-              </div>
-            </div>
-          );
-        }
-      )}
+      {tweetList.map((tweet) => {
+        return (
+          <ShowTweet
+            key={tweet.tweetID}
+            tweetID={tweet.tweetID}
+            userID={tweet.userID}
+            username={tweet.username}
+            displayName={tweet.displayName}
+            content={tweet.content}
+            reply={tweet.reply}
+            quote={tweet.quote}
+            replyCount={tweet.replyCount}
+            retweetCount={tweet.retweetCount}
+            likeCount={tweet.likeCount}
+          />
+        );
+      })}
     </div>
   );
 }

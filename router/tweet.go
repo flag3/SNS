@@ -13,11 +13,16 @@ import (
 )
 
 type Tweet struct {
-	TweetID int           `json:"tweetID,omitempty"  db:"TweetID"  form:"tweetID"`
-	UserID  int           `json:"userID,omitempty"  db:"UserID"  form:"userID"`
-	Content string        `json:"content,omitempty"  db:"Content"  form:"content"`
-	Reply   sql.NullInt64 `json:"reply,omitempty"  db:"Reply"  form:"reply"`
-	Quote   sql.NullInt64 `json:"quote,omitempty"  db:"Quote"  form:"quote"`
+	TweetID      int           `json:"tweetID,omitempty"  db:"TweetID"  form:"tweetID"`
+	UserID       int           `json:"userID,omitempty"  db:"UserID"  form:"userID"`
+	Username     string        `json:"username,omitempty"  db:"Username"  form:"username"`
+	DisplayName  string        `json:"displayName,omitempty"  db:"DisplayName"  form:"displayName"`
+	Content      string        `json:"content,omitempty"  db:"Content"  form:"content"`
+	Reply        sql.NullInt64 `json:"reply,omitempty"  db:"Reply"  form:"reply"`
+	Quote        sql.NullInt64 `json:"quote,omitempty"  db:"Quote"  form:"quote"`
+	ReplyCount   int           `json:"replyCount"  db:"ReplyCount"  form:"replyCount"`
+	RetweetCount int           `json:"retweetCount"  db:"RetweetCount"  form:"retweetCount"`
+	LikeCount    int           `json:"likeCount"  db:"LikeCount"  form:"likeCount"`
 }
 
 func usernameToUserID(username string) int {
@@ -32,7 +37,14 @@ func usernameToUserID(username string) int {
 func getTweetsHandler(c echo.Context) error {
 	tweets := []Tweet{}
 
-	database.DB.Select(&tweets, "SELECT * FROM tweet")
+	database.DB.Select(&tweets,
+		`SELECT t.TweetID, t.UserID, u.Username, u.DisplayName, t.Content, t.Reply, t.Quote, COUNT(t.Reply) as ReplyCount, COUNT(r.TweetID) as RetweetCount, COUNT(f.TweetID) as LikeCount
+    FROM tweet t
+    JOIN user u ON t.UserID = u.UserID
+    LEFT JOIN fav f ON t.TweetID = f.TweetID
+    LEFT JOIN retweet r ON t.TweetID = r.tweetID
+    GROUP BY t.TweetID`,
+	)
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)
 	}

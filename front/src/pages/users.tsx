@@ -1,8 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Users() {
   const [userList, setUserList] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`/api/users`).then((res) => {
@@ -30,6 +32,14 @@ function Users() {
               <div>名前：{user.displayName}</div>
               <div>ユーザー名：@{user.username}</div>
               {user.bio.Valid && <div>自己紹介：{user.bio.String}</div>}
+              <button
+                type="button"
+                onClick={() => {
+                  navigate(`/users/${user.username}`);
+                }}
+              >
+                ユーザーの詳細情報を見る
+              </button>
               <button
                 type="submit"
                 onClick={() => {

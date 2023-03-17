@@ -22,7 +22,7 @@ function Tweet() {
       <button
         type="submit"
         onClick={() => {
-          axios.post("/api/users/" + username + "/follows");
+          axios.post(`/api/users/${username}/follows`);
         }}
       >
         フォローする
@@ -30,7 +30,7 @@ function Tweet() {
       <button
         type="submit"
         onClick={() => {
-          axios.delete("/api/users/" + username + "/follows");
+          axios.delete(`/api/users/${username}/follows`);
         }}
       >
         フォロー解除する
