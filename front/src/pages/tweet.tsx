@@ -1,14 +1,16 @@
 import axios from "axios";
 import { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Tweet() {
+  const navigate = useNavigate();
   const [content, setContent] = useState("");
 
   const onClickHandler = useCallback(
     (e) => {
       e.preventDefault();
-      axios.post("/api/tweets", {
-        content: content,
+      axios.post("/api/tweets", { content: content }).then(() => {
+        navigate("/home");
       });
     },
     [content]

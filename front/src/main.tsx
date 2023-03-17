@@ -6,6 +6,7 @@ import PrivateRoute from "./lib/PrivateRoute";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Logout from "./pages/logout";
+import Tweet from "./pages/tweet";
 import Tweets from "./pages/tweets";
 import Favorite from "./pages/favorite";
 import Following from "./pages/following";
@@ -13,16 +14,26 @@ import Followers from "./pages/followers";
 import UserID from "./pages/userid";
 import Home from "./pages/home";
 import Users from "./pages/users";
+import Sidebar from "./components/sidebar";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
+      <Sidebar />
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
+        <Route
+          path="/tweet"
+          element={
+            <PrivateRoute>
+              <Tweet />
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/tweets"
           element={
@@ -32,7 +43,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           }
         />
         <Route
-          path="/users/:userID"
+          path="/users/:username"
           element={
             <PrivateRoute>
               <UserID />

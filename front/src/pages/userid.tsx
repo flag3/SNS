@@ -3,28 +3,26 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 function Tweet() {
-  const { userID } = useParams();
-  const [tweetInfo, setTweetInfo] = useState([]);
+  const { username } = useParams();
+  const [tweetList, setTweetList] = useState([]);
 
   useEffect(() => {
-    axios.get(`/api/${userID}`).then((res) => {
-      setTweetInfo(res.data);
+    axios.get(`/api/users/${username}/tweets`).then((res) => {
+      setTweetList(res.data);
     });
-  }, [userID]);
+  }, [username]);
 
   useEffect(() => {
-    console.log(tweetInfo);
-  }, [tweetInfo]);
+    console.log(tweetList);
+  }, [tweetList]);
 
   return (
     <div>
-      <h2>{userID}のツイート</h2>
+      <h2>{username}のツイート</h2>
       <button
         type="submit"
         onClick={() => {
-          axios.post("/api/follow", {
-            followeeUserID: userID,
-          });
+          axios.post("/api/users/" + username + "/follows");
         }}
       >
         フォローする
@@ -32,15 +30,19 @@ function Tweet() {
       <button
         type="submit"
         onClick={() => {
-          let url = "/api/follow/";
-          url += userID;
-          axios.delete(url);
+          axios.delete("/api/users/" + username + "/follows");
         }}
       >
         フォロー解除する
       </button>
-      {tweetInfo.map(
-        (tweet: { tweetID: number; userID: string; content: string }) => {
+      {tweetList.map(
+        (tweet: {
+          tweetID: number;
+          userID: number;
+          content: string;
+          replay: number;
+          quote: number;
+        }) => {
           return (
             <div key={tweet.tweetID}>
               <br></br>
@@ -51,9 +53,7 @@ function Tweet() {
                 <button
                   type="submit"
                   onClick={() => {
-                    axios.post("/api/like", {
-                      tweetID: tweet.tweetID,
-                    });
+                    axios.post("/api/tweets/" + tweet.tweetID + "/likes");
                   }}
                 >
                   いいね
@@ -61,9 +61,7 @@ function Tweet() {
                 <button
                   type="submit"
                   onClick={() => {
-                    let url = "/api/like/";
-                    url += tweet.tweetID;
-                    axios.delete(url);
+                    axios.delete("/api/tweets/" + tweet.tweetID + "/likes");
                   }}
                 >
                   いいね解除
@@ -71,9 +69,7 @@ function Tweet() {
                 <button
                   type="submit"
                   onClick={() => {
-                    let url = "/api/tweet/";
-                    url += tweet.tweetID;
-                    axios.delete(url);
+                    axios.delete("/api/tweets/" + tweet.tweetID);
                   }}
                 >
                   消す

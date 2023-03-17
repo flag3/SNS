@@ -72,13 +72,9 @@ func deleteFollowHandler(c echo.Context) error {
 
 func getFollowingHandler(c echo.Context) error {
 	username := c.Param("username")
+	userID := usernameToUserID(username)
 
 	users := []User{}
-
-	var userID int
-	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
-		return c.JSON(http.StatusBadRequest, userID)
-	}
 
 	database.DB.Select(&users, "SELECT UserID, Username, DisplayName, Bio FROM user JOIN follow ON UserID = FolloweeUserID WHERE FollowerUserID=?", userID)
 	if users == nil {
@@ -91,13 +87,9 @@ func getFollowingHandler(c echo.Context) error {
 
 func getFollowersHandler(c echo.Context) error {
 	username := c.Param("username")
+	userID := usernameToUserID(username)
 
 	users := []User{}
-
-	var userID int
-	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
-		return c.JSON(http.StatusBadRequest, userID)
-	}
 
 	database.DB.Select(&users, "SELECT UserID, Username FROM user JOIN follow ON UserID = FollowerUserID WHERE FolloweeUserID=?", userID)
 	if users == nil {

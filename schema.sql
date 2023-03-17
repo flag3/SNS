@@ -44,8 +44,8 @@ CREATE TABLE `follow` (
 DROP TABLE IF EXISTS `retweet`;
 CREATE TABLE `retweet` ( 
   `RetweetID` int NOT NULL AUTO_INCREMENT,
-  `UserID` int NOT NULL, 
   `TweetID` int NOT NULL, 
+  `UserID` int NOT NULL, 
   PRIMARY KEY (`RetweetID`)
 ) ENGINE = InnoDB;
 

@@ -1,38 +1,51 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 
-function Following() {
-  const { id } = useParams();
-  const [accountInfo, setAccountInfo] = useState([]);
+function Users() {
+  const [userList, setUserList] = useState([]);
 
   useEffect(() => {
     axios.get(`/api/users`).then((res) => {
-      setAccountInfo(res.data);
+      setUserList(res.data);
     });
-  }, [id]);
+  }, []);
 
   useEffect(() => {
-    console.log(accountInfo);
-  }, [accountInfo]);
+    console.log(userList);
+  }, [userList]);
 
   return (
     <div>
       <h2>ユーザーリスト</h2>
-      {accountInfo.map(
-        (account: {
+      {userList.map(
+        (user: {
           id: number;
           username: string;
           displayName: string;
           bio: { String: string; Valid: boolean };
         }) => {
           return (
-            <div key={account.id}>
+            <div key={user.id}>
               <br></br>
-              <div>ID：{account.id}</div>
-              <div>ユーザー名：{account.username}</div>
-              <div>表示名：{account.displayName}</div>
-              {account.bio.Valid && <div>自己紹介：{account.bio.String}</div>}
+              <div>名前：{user.displayName}</div>
+              <div>ユーザー名：@{user.username}</div>
+              {user.bio.Valid && <div>自己紹介：{user.bio.String}</div>}
+              <button
+                type="submit"
+                onClick={() => {
+                  axios.post(`/api/users/${user.username}/follows`);
+                }}
+              >
+                フォローする
+              </button>
+              <button
+                type="submit"
+                onClick={() => {
+                  axios.delete(`/api/users/${user.username}/follows`);
+                }}
+              >
+                フォロー解除する
+              </button>
             </div>
           );
         }
@@ -41,4 +54,4 @@ function Following() {
   );
 }
 
-export default Following;
+export default Users;

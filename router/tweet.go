@@ -2,6 +2,7 @@ package router
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -17,6 +18,15 @@ type Tweet struct {
 	Content string        `json:"content,omitempty"  db:"Content"  form:"content"`
 	Reply   sql.NullInt64 `json:"reply,omitempty"  db:"Reply"  form:"reply"`
 	Quote   sql.NullInt64 `json:"quote,omitempty"  db:"Quote"  form:"quote"`
+}
+
+func usernameToUserID(username string) int {
+	var userID int
+
+	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
+		log.Fatal(err)
+	}
+	return userID
 }
 
 func getTweetsHandler(c echo.Context) error {
@@ -40,16 +50,11 @@ func postTweetsHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, tweet)
 	}
 
-	var userID int
-
-	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
-		return c.JSON(http.StatusBadRequest, userID)
-	}
-
 	if tweet.Content == "" {
 		return c.String(http.StatusBadRequest, "empty string")
 	}
 
+	userID := usernameToUserID(username)
 	database.DB.Exec(tweetState, userID, tweet.Content)
 	return c.JSON(http.StatusCreated, tweet)
 }
@@ -73,11 +78,7 @@ func deleteTweetHandler(c echo.Context) error {
 
 	tweetState := "DELETE FROM tweet WHERE TweetID = ? AND userID = ?"
 
-	var userID int
-	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
-		return c.JSON(http.StatusBadRequest, userID)
-	}
-
+	userID := usernameToUserID(username)
 	database.DB.Exec(tweetState, tweetID, userID)
 	return c.NoContent(http.StatusOK)
 }
@@ -87,11 +88,7 @@ func getUserTweetsHandler(c echo.Context) error {
 
 	tweets := []Tweet{}
 
-	var userID int
-	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
-		return c.JSON(http.StatusBadRequest, userID)
-	}
-
+	userID := usernameToUserID(username)
 	database.DB.Select(&tweets, "SELECT * FROM tweet WHERE UserID=?", userID)
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)
@@ -105,11 +102,7 @@ func getHomeTweetHandler(c echo.Context) error {
 
 	tweets := []Tweet{}
 
-	var userID int
-	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
-		return c.JSON(http.StatusBadRequest, userID)
-	}
-
+	userID := usernameToUserID(username)
 	database.DB.Select(&tweets,
 		"SELECT tweet.TweetID, tweet.UserID, tweet.Content FROM tweet LEFT JOIN follow ON tweet.UserID = follow.FolloweeUserID AND follow.FollowerUserID = ? WHERE tweet.UserID = ? OR follow.FolloweeUserID IS NOT NULL",
 		userID, userID)

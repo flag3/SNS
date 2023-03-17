@@ -1,39 +1,68 @@
 import axios from "axios";
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 
-function Tweet() {
-  const [content, setContent] = useState("");
+function Tweets() {
+  const [tweetList, setTweetList] = useState([]);
 
-  const onClickHandler = useCallback(
-    (e) => {
-      e.preventDefault();
-      axios.post("/api/tweets", {
-        content: content,
-      });
-    },
-    [content]
-  );
+  useEffect(() => {
+    axios.get(`/api/tweets`).then((res) => {
+      setTweetList(res.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log(tweetList);
+  }, [tweetList]);
 
   return (
     <div>
-      <form>
-        <div>
-          <label htmlFor="content">ツイート内容: </label>
-          <input
-            type="text"
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          ></input>
-        </div>
-        <div>
-          <button type="submit" onClick={onClickHandler}>
-            ツイートする
-          </button>
-        </div>
-      </form>
+      <h2>ツイート一覧</h2>
+      {tweetList.map(
+        (tweet: { tweetID: number; userID: string; content: string }) => {
+          return (
+            <div key={tweet.tweetID}>
+              <br></br>
+              <div>番号：{tweet.tweetID}</div>
+              <div>ID：{tweet.userID}</div>
+              <div>ツイート：{tweet.content}</div>
+              <div>
+                <button
+                  type="submit"
+                  onClick={() => {
+                    axios.post("/api/like", {
+                      tweetID: tweet.tweetID,
+                    });
+                  }}
+                >
+                  いいね
+                </button>
+                <button
+                  type="submit"
+                  onClick={() => {
+                    let url = "/api/like/";
+                    url += tweet.tweetID;
+                    axios.delete(url);
+                  }}
+                >
+                  いいね解除
+                </button>
+                <button
+                  type="submit"
+                  onClick={() => {
+                    let url = "/api/tweet/";
+                    url += tweet.tweetID;
+                    axios.delete(url);
+                  }}
+                >
+                  消す
+                </button>
+              </div>
+            </div>
+          );
+        }
+      )}
     </div>
   );
 }
 
-export default Tweet;
+export default Tweets;

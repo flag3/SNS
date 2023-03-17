@@ -20,15 +20,10 @@ type Like struct {
 func postLikeHandler(c echo.Context) error {
 	tweetID := c.Param("tweetID")
 	username := c.Get("username").(string)
+	userID := usernameToUserID(username)
 
 	like := Like{}
 	likeState := "INSERT INTO fav (TweetID, UserID) VALUES (?, ?)"
-
-	var userID int
-
-	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
-		return c.JSON(http.StatusBadRequest, userID)
-	}
 
 	// ふぁぼしてるかチェック
 	var count int
@@ -49,33 +44,34 @@ func postLikeHandler(c echo.Context) error {
 func deleteLikeHandler(c echo.Context) error {
 	tweetID := c.Param("tweetID")
 	username := c.Get("username").(string)
+	userID := usernameToUserID(username)
 
 	likeState := "DELETE FROM fav WHERE TweetID = ? AND UserID = ?"
-	var userID int
-
-	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
-		return c.JSON(http.StatusBadRequest, userID)
-	}
-
 	database.DB.Exec(likeState, tweetID, userID)
 	return c.NoContent(http.StatusOK)
 }
 
 func getUserLikesHandler(c echo.Context) error {
 	username := c.Param("username")
+	userID := usernameToUserID(username)
 
 	tweets := []Tweet{}
-
-	var userID int
-
-	if err := database.DB.QueryRow("SELECT UserID FROM user WHERE Username = ?", username).Scan(&userID); err != nil {
-		return c.JSON(http.StatusBadRequest, userID)
-	}
-
 	database.DB.Select(&tweets, "SELECT tweet.* FROM tweet JOIN fav ON tweet.TweetID = fav.TweetID WHERE fav.UserID = ?", userID)
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)
 	}
 
 	return c.JSON(http.StatusOK, tweets)
+}
+
+func getLikeUsersHandler(c echo.Context) error {
+	tweetID := c.Param("tweetID")
+
+	users := []User{}
+	database.DB.Select(&users, "SELECT user.UserID, user.Username, user.DisplayName, user.Bio FROM user JOIN fav ON user.UserID = fav.UserID WHERE fav.TweetID = ?", tweetID)
+	if users == nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	return c.JSON(http.StatusOK, users)
 }
