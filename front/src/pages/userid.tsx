@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import ShowTweet from "./showTweet";
 
 function Tweet() {
   const { username } = useParams();
@@ -18,67 +19,25 @@ function Tweet() {
 
   return (
     <div>
-      <h2>{username}のツイート</h2>
-      <button
-        type="submit"
-        onClick={() => {
-          axios.post(`/api/users/${username}/follows`);
-        }}
-      >
-        フォローする
-      </button>
-      <button
-        type="submit"
-        onClick={() => {
-          axios.delete(`/api/users/${username}/follows`);
-        }}
-      >
-        フォロー解除する
-      </button>
-      {tweetList.map(
-        (tweet: {
-          tweetID: number;
-          userID: number;
-          content: string;
-          replay: number;
-          quote: number;
-        }) => {
-          return (
-            <div key={tweet.tweetID}>
-              <br></br>
-              <div>番号：{tweet.tweetID}</div>
-              <div>ID：{tweet.userID}</div>
-              <div>
-                ツイート：{tweet.content}
-                <button
-                  type="submit"
-                  onClick={() => {
-                    axios.post("/api/tweets/" + tweet.tweetID + "/likes");
-                  }}
-                >
-                  いいね
-                </button>
-                <button
-                  type="submit"
-                  onClick={() => {
-                    axios.delete("/api/tweets/" + tweet.tweetID + "/likes");
-                  }}
-                >
-                  いいね解除
-                </button>
-                <button
-                  type="submit"
-                  onClick={() => {
-                    axios.delete("/api/tweets/" + tweet.tweetID);
-                  }}
-                >
-                  消す
-                </button>
-              </div>
-            </div>
-          );
-        }
-      )}
+      <h2>@{username}さんのツイート</h2>
+      {tweetList.map((tweet) => {
+        return (
+          <ShowTweet
+            key={tweet.tweetID}
+            tweetID={tweet.tweetID}
+            userID={tweet.userID}
+            username={tweet.username}
+            displayName={tweet.displayName}
+            content={tweet.content}
+            reply={tweet.reply}
+            quote={tweet.quote}
+            replyCount={tweet.replyCount}
+            retweetCount={tweet.retweetCount}
+            quoteCount={tweet.quoteCount}
+            likeCount={tweet.likeCount}
+          />
+        );
+      })}
     </div>
   );
 }

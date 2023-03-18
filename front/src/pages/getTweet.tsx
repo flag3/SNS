@@ -33,6 +33,7 @@ function Tweets() {
             quote={tweet.quote}
             replyCount={tweet.replyCount}
             retweetCount={tweet.retweetCount}
+            quoteCount={tweet.quoteCount}
             likeCount={tweet.likeCount}
           />
         );

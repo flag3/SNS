@@ -6,8 +6,8 @@ import PrivateRoute from "./lib/PrivateRoute";
 import Signup from "./pages/signup";
 import Login from "./pages/login";
 import Logout from "./pages/logout";
-import Tweet from "./pages/tweet";
-import Tweets from "./pages/tweets";
+import PostTweet from "./pages/postTweet";
+import GetTweet from "./pages/getTweet";
 import Favorite from "./pages/favorite";
 import Following from "./pages/following";
 import Followers from "./pages/followers";
@@ -30,7 +30,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           path="/tweet"
           element={
             <PrivateRoute>
-              <Tweet />
+              <PostTweet />
             </PrivateRoute>
           }
         />
@@ -38,7 +38,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           path="/tweets"
           element={
             <PrivateRoute>
-              <Tweets />
+              <GetTweet />
             </PrivateRoute>
           }
         />

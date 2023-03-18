@@ -13,6 +13,14 @@ import (
 )
 
 type Tweet struct {
+	TweetID int           `json:"tweetID,omitempty"  db:"TweetID"  form:"tweetID"`
+	UserID  int           `json:"userID,omitempty"  db:"UserID"  form:"userID"`
+	Content string        `json:"content,omitempty"  db:"Content"  form:"content"`
+	Reply   sql.NullInt64 `json:"reply,omitempty"  db:"Reply"  form:"reply"`
+	Quote   sql.NullInt64 `json:"quote,omitempty"  db:"Quote"  form:"quote"`
+}
+
+type TweetDetail struct {
 	TweetID      int           `json:"tweetID,omitempty"  db:"TweetID"  form:"tweetID"`
 	UserID       int           `json:"userID,omitempty"  db:"UserID"  form:"userID"`
 	Username     string        `json:"username,omitempty"  db:"Username"  form:"username"`
@@ -22,6 +30,7 @@ type Tweet struct {
 	Quote        sql.NullInt64 `json:"quote,omitempty"  db:"Quote"  form:"quote"`
 	ReplyCount   int           `json:"replyCount"  db:"ReplyCount"  form:"replyCount"`
 	RetweetCount int           `json:"retweetCount"  db:"RetweetCount"  form:"retweetCount"`
+	QuoteCount   int           `json:"quoteCount"  db:"QuoteCount"  form:"quoteCount"`
 	LikeCount    int           `json:"likeCount"  db:"LikeCount"  form:"likeCount"`
 }
 
@@ -35,15 +44,15 @@ func usernameToUserID(username string) int {
 }
 
 func getTweetsHandler(c echo.Context) error {
-	tweets := []Tweet{}
+	tweets := []TweetDetail{}
 
 	database.DB.Select(&tweets,
-		`SELECT t.TweetID, t.UserID, u.Username, u.DisplayName, t.Content, t.Reply, t.Quote, COUNT(t.Reply) as ReplyCount, COUNT(r.TweetID) as RetweetCount, COUNT(f.TweetID) as LikeCount
-    FROM tweet t
-    JOIN user u ON t.UserID = u.UserID
-    LEFT JOIN fav f ON t.TweetID = f.TweetID
-    LEFT JOIN retweet r ON t.TweetID = r.tweetID
-    GROUP BY t.TweetID`,
+		`SELECT t.TweetID, t.UserID, u.Username, u.DisplayName, t.Content, t.Reply, t.Quote, COUNT(DISTINCT t.Reply) as ReplyCount, COUNT(DISTINCT r.UserID) as RetweetCount, COUNT(DISTINCT t.Quote) as QuoteCount, COUNT(DISTINCT fa.UserID) as LikeCount
+		FROM tweet t
+		JOIN user u ON t.UserID = u.UserID
+		LEFT JOIN retweet r ON t.TweetID = r.tweetID
+		LEFT JOIN fav fa ON t.TweetID = fa.TweetID
+		GROUP BY t.TweetID`,
 	)
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)
@@ -74,9 +83,17 @@ func postTweetsHandler(c echo.Context) error {
 func getTweetHandler(c echo.Context) error {
 	tweetID := c.Param("tweetID")
 
-	tweets := []Tweet{}
+	tweets := []TweetDetail{}
 
-	database.DB.Select(&tweets, "SELECT * FROM tweet WHERE TweetID = ?", tweetID)
+	database.DB.Select(&tweets,
+		`SELECT t.TweetID, t.UserID, u.Username, u.DisplayName, t.Content, t.Reply, t.Quote, COUNT(DISTINCT t.Reply) as ReplyCount, COUNT(DISTINCT r.UserID) as RetweetCount, COUNT(DISTINCT t.Quote) as QuoteCount, COUNT(DISTINCT fa.UserID) as LikeCount
+		FROM tweet t
+		JOIN user u ON t.UserID = u.UserID
+		LEFT JOIN fav fa ON t.TweetID = fa.TweetID
+		LEFT JOIN retweet r ON t.TweetID = r.tweetID 
+    WHERE t.TweetID = ? 
+		GROUP BY t.TweetID`,
+		tweetID)
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)
 	}
@@ -98,10 +115,18 @@ func deleteTweetHandler(c echo.Context) error {
 func getUserTweetsHandler(c echo.Context) error {
 	username := c.Param("username")
 
-	tweets := []Tweet{}
+	tweets := []TweetDetail{}
 
 	userID := usernameToUserID(username)
-	database.DB.Select(&tweets, "SELECT * FROM tweet WHERE UserID=?", userID)
+	database.DB.Select(&tweets,
+		`SELECT t.TweetID, t.UserID, u.Username, u.DisplayName, t.Content, t.Reply, t.Quote, COUNT(DISTINCT t.Reply) as ReplyCount, COUNT(DISTINCT r.UserID) as RetweetCount, COUNT(DISTINCT t.Quote) as QuoteCount, COUNT(DISTINCT fa.UserID) as LikeCount
+		FROM tweet t
+		JOIN user u ON t.UserID = u.UserID
+		LEFT JOIN fav fa ON t.TweetID = fa.TweetID
+		LEFT JOIN retweet r ON t.TweetID = r.tweetID 
+    WHERE t.userID = ? 
+		GROUP BY t.TweetID`,
+		userID)
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)
 	}
@@ -112,11 +137,18 @@ func getUserTweetsHandler(c echo.Context) error {
 func getHomeTweetHandler(c echo.Context) error {
 	username := c.Get("username").(string)
 
-	tweets := []Tweet{}
+	tweets := []TweetDetail{}
 
 	userID := usernameToUserID(username)
 	database.DB.Select(&tweets,
-		"SELECT tweet.TweetID, tweet.UserID, tweet.Content FROM tweet LEFT JOIN follow ON tweet.UserID = follow.FolloweeUserID AND follow.FollowerUserID = ? WHERE tweet.UserID = ? OR follow.FolloweeUserID IS NOT NULL",
+		`SELECT t.TweetID, t.UserID, u.Username, u.DisplayName, t.Content, t.Reply, t.Quote, COUNT(DISTINCT t.Reply) as ReplyCount, COUNT(DISTINCT r.UserID) as RetweetCount, COUNT(DISTINCT t.Quote) as QuoteCount, COUNT(DISTINCT fa.UserID) as LikeCount
+    FROM tweet t
+    JOIN user u ON t.UserID = u.UserID
+		LEFT JOIN fav fa ON t.TweetID = fa.TweetID
+		LEFT JOIN retweet r ON t.TweetID = r.tweetID 
+    LEFT JOIN follow fo ON t.UserID = fo.FolloweeUserID AND fo.FollowerUserID = ? 
+    WHERE t.UserID = ? OR fo.FolloweeUserID IS NOT NULL
+    GROUP BY t.TweetID`,
 		userID, userID)
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)

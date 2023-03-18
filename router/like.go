@@ -55,8 +55,16 @@ func getUserLikesHandler(c echo.Context) error {
 	username := c.Param("username")
 	userID := usernameToUserID(username)
 
-	tweets := []Tweet{}
-	database.DB.Select(&tweets, "SELECT tweet.* FROM tweet JOIN fav ON tweet.TweetID = fav.TweetID WHERE fav.UserID = ?", userID)
+	tweets := []TweetDetail{}
+	database.DB.Select(&tweets,
+		`SELECT t.TweetID, t.UserID, u.Username, u.DisplayName, t.Content, t.Reply, t.Quote, COUNT(DISTINCT t.Reply) as ReplyCount, COUNT(DISTINCT r.UserID) as RetweetCount, COUNT(DISTINCT t.Quote) as QuoteCount, COUNT(DISTINCT fa.UserID) as LikeCount
+		FROM tweet t
+		JOIN user u ON t.UserID = u.UserID
+		LEFT JOIN fav fa ON t.TweetID = fa.TweetID
+		LEFT JOIN retweet r ON t.TweetID = r.tweetID 
+    WHERE fa.userID = ? 
+		GROUP BY t.TweetID`,
+		userID)
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)
 	}

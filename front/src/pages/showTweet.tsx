@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function showTweet(props: {
   tweetID: number;
@@ -11,18 +11,23 @@ function showTweet(props: {
   quote: { Int64: number; Valid: boolean };
   replyCount: number;
   retweetCount: number;
+  quoteCount: number;
   likeCount: number;
 }) {
   const navigate = useNavigate();
   return (
     <div>
-      <div>番号：{props.tweetID}</div>
-      <div>ID：{props.userID}</div>
       <div>名前：{props.displayName}</div>
-      <div>ユーザー名：@{props.username}</div>
+      <div>
+        ユーザー名：
+        <Link to={`/users/${props.username}`} key={props.username}>
+          @{props.username}
+        </Link>
+      </div>
       <div>ツイート：{props.content}</div>
       <div>リプライ数：{props.replyCount}</div>
       <div>リツイート数：{props.retweetCount}</div>
+      <div>引用数：{props.quoteCount}</div>
       <div>いいね数：{props.likeCount}</div>
       <div>
         <button
@@ -36,7 +41,7 @@ function showTweet(props: {
         <button
           type="button"
           onClick={() => {
-            axios.post(`/api/tweets/${props.tweetID}/retweet`);
+            axios.post(`/api/tweets/${props.tweetID}/retweets`);
           }}
         >
           リツイート
@@ -44,7 +49,15 @@ function showTweet(props: {
         <button
           type="button"
           onClick={() => {
-            axios.delete(`/api/tweets/${props.tweetID}/retweet`);
+            navigate(`/tweets/${props.tweetID}`);
+          }}
+        >
+          引用リツイート
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            axios.delete(`/api/tweets/${props.tweetID}/retweets`);
           }}
         >
           リツイート解除
@@ -52,7 +65,7 @@ function showTweet(props: {
         <button
           type="button"
           onClick={() => {
-            axios.post(`/api/tweets/${props.tweetID}/like`);
+            axios.post(`/api/tweets/${props.tweetID}/likes`);
           }}
         >
           いいね
@@ -60,7 +73,7 @@ function showTweet(props: {
         <button
           type="button"
           onClick={() => {
-            axios.delete(`/api/tweets/${props.tweetID}/like`);
+            axios.delete(`/api/tweets/${props.tweetID}/likes`);
           }}
         >
           いいね解除

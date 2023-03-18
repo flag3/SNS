@@ -1,10 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import ShowUser from "./showUser";
 
-function Users() {
+function User() {
   const [userList, setUserList] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`/api/users`).then((res) => {
@@ -16,52 +15,24 @@ function Users() {
     console.log(userList);
   }, [userList]);
 
+  console.log(userList);
+
   return (
     <div>
-      <h2>ユーザーリスト</h2>
-      {userList.map(
-        (user: {
-          id: number;
-          username: string;
-          displayName: string;
-          bio: { String: string; Valid: boolean };
-        }) => {
-          return (
-            <div key={user.id}>
-              <br></br>
-              <div>名前：{user.displayName}</div>
-              <div>ユーザー名：@{user.username}</div>
-              {user.bio.Valid && <div>自己紹介：{user.bio.String}</div>}
-              <button
-                type="button"
-                onClick={() => {
-                  navigate(`/users/${user.username}`);
-                }}
-              >
-                ユーザーの詳細情報を見る
-              </button>
-              <button
-                type="submit"
-                onClick={() => {
-                  axios.post(`/api/users/${user.username}/follows`);
-                }}
-              >
-                フォローする
-              </button>
-              <button
-                type="submit"
-                onClick={() => {
-                  axios.delete(`/api/users/${user.username}/follows`);
-                }}
-              >
-                フォロー解除する
-              </button>
-            </div>
-          );
-        }
-      )}
+      <h2>ツイート一覧</h2>
+      {userList.map((user) => {
+        return (
+          <ShowUser
+            key={user.userID}
+            userID={user.userID}
+            username={user.username}
+            displayName={user.displayName}
+            bio={user.bio}
+          />
+        );
+      })}
     </div>
   );
 }
 
-export default Users;
+export default User;

@@ -24,12 +24,20 @@ const SidebarData = [
     link: "/following",
   },
   {
-    title: "詳細設定",
-    link: "/",
+    title: "サインアップ",
+    link: "/signup",
+  },
+  {
+    title: "ログイン",
+    link: "/login",
   },
   {
     title: "ログアウト",
     link: "/logout",
+  },
+  {
+    title: "タイトル",
+    link: "/",
   },
 ];
 

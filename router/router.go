@@ -16,7 +16,6 @@ func NewServer(e *echo.Echo) {
 
 	withLogin.GET("/tweets", getTweetsHandler)
 	withLogin.POST("/tweets", postTweetsHandler)
-
 	withLogin.GET("/tweets/:tweetID", getTweetHandler)
 	//withLogin.PUT("/tweets/:tweetID", postTweetHandler)
 	withLogin.DELETE("/tweets/:tweetID", deleteTweetHandler)
