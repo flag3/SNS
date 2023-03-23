@@ -49,7 +49,6 @@ function showTweet(props: {
           key={props.tweetID}
         >
           <ReplyIcon />
-          {props.replyCount}
         </button>
         <button
           type="button"
@@ -66,7 +65,6 @@ function showTweet(props: {
           }}
         >
           {isRetweeted ? <RepeatOnIcon /> : <RepeatIcon />}
-          {retweetCount + props.quoteCount}
         </button>
         <button
           type="button"
@@ -83,9 +81,11 @@ function showTweet(props: {
           }}
         >
           {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          {likeCount}
         </button>
       </div>
+      {retweetCount ? <div>{retweetCount}件のリツイート</div> : ""}
+      {props.quoteCount ? <div>{props.quoteCount}件の引用</div> : ""}
+      {likeCount ? <div>{likeCount}件のいいね</div> : ""}
     </div>
   );
 }

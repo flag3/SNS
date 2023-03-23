@@ -2,44 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./sidebar.css";
 
-const SidebarData = [
-  {
-    title: "ホーム",
-    link: "/home",
-  },
-  {
-    title: "ユーザー一覧",
-    link: "/users",
-  },
-  {
-    title: "ツイート一覧",
-    link: "/tweets",
-  },
-  {
-    title: "ツイートする",
-    link: "/tweet",
-  },
-  {
-    title: "プロフィール",
-    link: "/profile",
-  },
-  {
-    title: "サインアップ",
-    link: "/signup",
-  },
-  {
-    title: "ログイン",
-    link: "/login",
-  },
-  {
-    title: "ログアウト",
-    link: "/logout",
-  },
-  {
-    title: "タイトル",
-    link: "/",
-  },
-];
+const SidebarData = [];
 
 const Sidebar = () => {
   return (

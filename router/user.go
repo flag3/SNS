@@ -2,6 +2,7 @@ package router
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,25 +12,25 @@ import (
 )
 
 type User struct {
-	UserID      int            `json:"id,omitempty"  db:"UserID"`
-	Username    string         `json:"username,omitempty"  db:"Username"`
-	DisplayName string         `json:"displayName,omitempty"  db:"DisplayName"`
-	Bio         sql.NullString `json:"bio,omitempty"  db:"Bio"`
-	IsFollowed  bool           `json:"isFollowed"  db:"IsFollowed"`
-	IsFollowing bool           `json:"isFollowing"  db:"IsFollowing"`
+	UserID      int            `json:"id,omitempty"  db:"UserID"  form:"userID"`
+	Username    string         `json:"username,omitempty"  db:"Username"  form:"username"`
+	DisplayName string         `json:"displayName,omitempty"  db:"DisplayName"  form:"displayName"`
+	Bio         sql.NullString `json:"bio,omitempty"  db:"Bio"  form:"bio"`
+	IsFollowed  bool           `json:"isFollowed"  db:"IsFollowed"  form:"isFollowed"`
+	IsFollowing bool           `json:"isFollowing"  db:"IsFollowing" form:"isFollowing"`
 }
 
 type UserDetail struct {
-	UserID         int            `json:"id,omitempty"  db:"UserID"`
-	Username       string         `json:"username,omitempty"  db:"Username"`
-	DisplayName    string         `json:"displayName,omitempty"  db:"DisplayName"`
-	Bio            sql.NullString `json:"bio,omitempty"  db:"Bio"`
-	Location       sql.NullString `json:"location,omitempty"  db:"Location"`
-	Website        sql.NullString `json:"website,omitempty"  db:"Website"`
-	FollowingCount int            `json:"followingCount"  db:"FollowingCount"`
-	FollowerCount  int            `json:"followerCount"  db:"FollowerCount"`
-	IsFollowed     bool           `json:"isFollowed"  db:"IsFollowed"`
-	IsFollowing    bool           `json:"isFollowing"  db:"IsFollowing"`
+	UserID         int            `json:"id,omitempty"  db:"UserID"  form:"userID"`
+	Username       string         `json:"username,omitempty"  db:"Username"  form:"username"`
+	DisplayName    string         `json:"displayName,omitempty"  db:"DisplayName"  form:"displayName"`
+	Bio            sql.NullString `json:"bio,omitempty"  db:"Bio"  form:"bio"`
+	Location       sql.NullString `json:"location,omitempty"  db:"Location" form:"location"`
+	Website        sql.NullString `json:"website,omitempty"  db:"Website"  form:"website"`
+	FollowingCount int            `json:"followingCount"  db:"FollowingCount"  form:"followingCount"`
+	FollowerCount  int            `json:"followerCount"  db:"FollowerCount"  form:"followerCount"`
+	IsFollowed     bool           `json:"isFollowed"  db:"IsFollowed"  form:"isFollowed"`
+	IsFollowing    bool           `json:"isFollowing"  db:"IsFollowing"  form:"isFollowing"`
 }
 
 func getUsersHandler(c echo.Context) error {
@@ -94,4 +95,72 @@ func getUserHandler(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, users)
+}
+
+func putUserDisplayNameHandler(c echo.Context) error {
+	username := c.Get("username").(string)
+
+	user := UserDetail{}
+	userState := "UPDATE user SET DisplayName = ? WHERE Username = ?"
+
+	if err := c.Bind(&user); err != nil {
+		return c.JSON(http.StatusBadRequest, user)
+	}
+
+	fmt.Println(user)
+
+	if user.DisplayName == "" {
+		return c.String(http.StatusBadRequest, "empty string")
+	}
+
+	database.DB.Exec(userState, user.DisplayName, username)
+	return c.JSON(http.StatusOK, user)
+}
+
+func putUserBioHandler(c echo.Context) error {
+	username := c.Get("username").(string)
+
+	user := UserDetail{}
+	userState := "UPDATE user SET Bio = ? WHERE Username = ?"
+
+	if err := c.Bind(&user); err != nil {
+		return c.JSON(http.StatusBadRequest, user)
+	}
+
+	fmt.Println(user)
+
+	database.DB.Exec(userState, user.Bio.String, username)
+	return c.JSON(http.StatusOK, user)
+}
+
+func putUserLocationHandler(c echo.Context) error {
+	username := c.Get("username").(string)
+
+	user := UserDetail{}
+	userState := "UPDATE user SET Location = ? WHERE Username = ?"
+
+	if err := c.Bind(&user); err != nil {
+		return c.JSON(http.StatusBadRequest, user)
+	}
+
+	fmt.Println(user)
+
+	database.DB.Exec(userState, user.Location.String, username)
+	return c.JSON(http.StatusOK, user)
+}
+
+func putUserWebsiteHandler(c echo.Context) error {
+	username := c.Get("username").(string)
+
+	user := UserDetail{}
+	userState := "UPDATE user SET Website = ? WHERE Username = ?"
+
+	if err := c.Bind(&user); err != nil {
+		return c.JSON(http.StatusBadRequest, user)
+	}
+
+	fmt.Println(user)
+
+	database.DB.Exec(userState, user.Website.String, username)
+	return c.JSON(http.StatusOK, user)
 }

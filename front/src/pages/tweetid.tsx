@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useCallback, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ShowTweet from "./showTweet";
+import ShowTweetDetail from "./showTweetDetail";
 
 function TweetID() {
   const { tweetID } = useParams();
@@ -53,7 +53,7 @@ function TweetID() {
       <h2>@{tweetID}さんのツイート</h2>
       {tweetList.map((tweet) => {
         return (
-          <ShowTweet
+          <ShowTweetDetail
             key={tweet.tweetID}
             tweetID={tweet.tweetID}
             userID={tweet.userID}

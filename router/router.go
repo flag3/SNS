@@ -38,6 +38,11 @@ func NewServer(e *echo.Echo) {
 	withLogin.DELETE("/tweets/:tweetID/retweets", deleteRetweetHandler)
 	withLogin.GET("/tweets/:tweetID/retweets/users", getRetweetUsersHandler)
 
+	withLogin.PUT("/profile/userDisplayName", putUserDisplayNameHandler)
+	withLogin.PUT("/profile/userBio", putUserBioHandler)
+	withLogin.PUT("/profile/userLocation", putUserLocationHandler)
+	withLogin.PUT("/profile/userWebsite", putUserWebsiteHandler)
+
 	withLogin.GET("/whoami", getWhoAmIHandler)
 	withLogin.GET("/logout", getLogoutHandler)
 

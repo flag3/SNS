@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 function showTweet(props: {
@@ -13,39 +14,48 @@ function showTweet(props: {
   isFollowed: boolean;
   isFollowing: boolean;
 }) {
+  const [isFollowing, setIsFollowing] = useState(props.isFollowing);
   return (
     <div className="user">
-      <div>名前：{props.displayName}</div>
       <div>
-        ユーザー名：
+        <Link to={`/users/${props.username}`} key={props.username}>
+          {props.displayName}
+        </Link>
+      </div>
+      <div>
         <Link to={`/users/${props.username}`} key={props.username}>
           @{props.username}
         </Link>
       </div>
-      <div>フォローされてるか：{props.isFollowed ? 1 : 0}</div>
-      <div>フォローしているか：{props.isFollowing ? 1 : 0}</div>
-      {props.bio.Valid && <div>自己紹介：{props.bio.String}</div>}
-      <div>場所：{props.location.String}</div>
-      <div>Web：{props.website.String}</div>
-      <div>{props.followerCount} フォロワー</div>
-      <div>{props.followingCount} フォロー中</div>
+      {props.isFollowed && <div>フォローされています</div>}
       <div>
         <button
           type="submit"
           onClick={() => {
-            axios.post(`/api/users/${props.username}/follows`);
+            if (isFollowing) {
+              axios.delete(`/api/users/${props.username}/follows`);
+              setIsFollowing(!isFollowing);
+            } else {
+              axios.post(`/api/users/${props.username}/follows`);
+              setIsFollowing(!isFollowing);
+            }
           }}
         >
-          フォローする
+          {isFollowing ? <div>フォロー中</div> : <div>フォローする</div>}
         </button>
-        <button
-          type="submit"
-          onClick={() => {
-            axios.delete(`/api/users/${props.username}/follows`);
-          }}
-        >
-          フォロー解除する
-        </button>
+      </div>
+      {props.bio.Valid && <div>{props.bio.String}</div>}
+      <div>場所：{props.location.String}</div>
+      <div>Web：{props.website.String}</div>
+      <div>
+        <Link to={`/users/${props.username}/followers`} key={props.username}>
+          {props.followerCount} フォロワー
+        </Link>
+      </div>
+      <div>
+        <Link to={`/users/${props.username}/following`} key={props.username}>
+          {props.followingCount} フォロー中
+        </Link>
       </div>
     </div>
   );

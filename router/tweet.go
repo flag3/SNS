@@ -62,7 +62,7 @@ func getTweetsHandler(c echo.Context) error {
       (SELECT COUNT(*) FROM tweet WHERE Reply = t.TweetID) AS ReplyCount,
       COUNT(DISTINCT r.UserID) AS RetweetCount, 
       (SELECT COUNT(*) FROM tweet WHERE Quote = t.TweetID) AS QuoteCount,
-      COUNT(DISTINCT l.UserID) as LikeCount, 
+      COUNT(DISTINCT l.UserID) AS LikeCount, 
       COUNT(DISTINCT CASE WHEN r.UserID = ? THEN r.UserID END) AS IsRetweeted,
       COUNT(DISTINCT CASE WHEN l.UserID = ? THEN l.UserID END) AS IsLiked
 		FROM 

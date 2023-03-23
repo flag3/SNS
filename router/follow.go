@@ -16,12 +16,6 @@ type Follow struct {
 	FolloweeUserID int `json:"followeeUserID,omitempty"  db:"FolloweeUserID"  form:"followeeUserID"`
 }
 
-type Account struct {
-	ID          int    `json:"id,omitempty"  db:"ID"`
-	Name        string `json:"name,omitempty"  db:"Name"`
-	DisplayName string `json:"displayName,omitempty"  db:"DisplayName"`
-}
-
 func postFollowHandler(c echo.Context) error {
 	followerUsername := c.Get("username").(string)
 	followeeUsername := c.Param("username")
@@ -76,7 +70,22 @@ func getFollowingHandler(c echo.Context) error {
 
 	users := []User{}
 
-	database.DB.Select(&users, "SELECT UserID, Username, DisplayName, Bio FROM user JOIN follow ON UserID = FolloweeUserID WHERE FollowerUserID=?", userID)
+	database.DB.Select(&users,
+		`SELECT 
+      u.UserID, 
+      u.Username, 
+      u.DisplayName, 
+      u.Bio,
+      COUNT(DISTINCT CASE WHEN f1.FolloweeUserID = ? THEN f1.FolloweeUserID END) AS IsFollowed,
+      COUNT(DISTINCT CASE WHEN f2.FollowerUserID = ? THEN f2.FollowerUserID END) AS IsFollowing
+    FROM 
+      user u
+      LEFT JOIN follow f1 ON u.UserID = f1.FollowerUserID
+      LEFT JOIN follow f2 ON u.UserID = f2.FolloweeUserID
+    WHERE f2.FollowerUserID = ?
+    GROUP BY 
+      u.UserID`,
+		userID, userID, userID)
 	if users == nil {
 		return c.NoContent(http.StatusNotFound)
 	}
@@ -91,7 +100,23 @@ func getFollowersHandler(c echo.Context) error {
 
 	users := []User{}
 
-	database.DB.Select(&users, "SELECT UserID, Username FROM user JOIN follow ON UserID = FollowerUserID WHERE FolloweeUserID=?", userID)
+	database.DB.Select(&users,
+		`SELECT 
+      u.UserID, 
+      u.Username, 
+      u.DisplayName, 
+      u.Bio,
+      COUNT(DISTINCT CASE WHEN f1.FolloweeUserID = ? THEN f1.FolloweeUserID END) AS IsFollowed,
+      COUNT(DISTINCT CASE WHEN f2.FollowerUserID = ? THEN f2.FollowerUserID END) AS IsFollowing
+    FROM 
+      user u
+      LEFT JOIN follow f1 ON u.UserID = f1.FollowerUserID
+      LEFT JOIN follow f2 ON u.UserID = f2.FolloweeUserID
+    WHERE 
+      f1.FolloweeUserID = ?
+    GROUP BY 
+      u.UserID`,
+		userID, userID, userID)
 	if users == nil {
 		return c.NoContent(http.StatusNotFound)
 	}

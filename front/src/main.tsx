@@ -15,12 +15,15 @@ import UserID from "./pages/userid";
 import TweetID from "./pages/tweetid";
 import Home from "./pages/home";
 import Users from "./pages/users";
+import Profile from "./pages/profile";
 import Sidebar from "./components/sidebar";
+import NonSidebar from "./components/nonsidebar";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
+      <NonSidebar />
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/signup" element={<Signup />} />
@@ -104,6 +107,15 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <PrivateRoute>
               <Sidebar />
               <TweetID />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Sidebar />
+              <Profile />
             </PrivateRoute>
           }
         />

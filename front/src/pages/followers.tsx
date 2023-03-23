@@ -8,7 +8,7 @@ function Followers() {
   const [userList, setUserList] = useState([]);
 
   useEffect(() => {
-    axios.get(`/api/users/${username}/following`).then((res) => {
+    axios.get(`/api/users/${username}/followers`).then((res) => {
       setUserList(res.data);
     });
   }, [username]);
