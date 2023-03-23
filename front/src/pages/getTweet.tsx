@@ -15,8 +15,6 @@ function Tweets() {
     console.log(tweetList);
   }, [tweetList]);
 
-  console.log(tweetList);
-
   return (
     <div>
       <h2>ツイート一覧</h2>
@@ -35,6 +33,8 @@ function Tweets() {
             retweetCount={tweet.retweetCount}
             quoteCount={tweet.quoteCount}
             likeCount={tweet.likeCount}
+            isRetweeted={tweet.isRetweeted}
+            isLiked={tweet.isLiked}
           />
         );
       })}

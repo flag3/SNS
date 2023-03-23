@@ -20,10 +20,6 @@ const SidebarData = [
     link: "/tweet",
   },
   {
-    title: "フォロー",
-    link: "/following",
-  },
-  {
     title: "サインアップ",
     link: "/signup",
   },

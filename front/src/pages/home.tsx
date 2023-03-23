@@ -4,14 +4,14 @@ import { useParams } from "react-router-dom";
 import ShowTweet from "./showTweet";
 
 function Home() {
-  const { userID } = useParams();
+  const { username } = useParams();
   const [tweetList, setTweetList] = useState([]);
 
   useEffect(() => {
     axios.get(`/api/home`).then((res) => {
       setTweetList(res.data);
     });
-  }, [userID]);
+  }, [username]);
 
   useEffect(() => {
     console.log(tweetList);
@@ -35,6 +35,8 @@ function Home() {
             retweetCount={tweet.retweetCount}
             quoteCount={tweet.quoteCount}
             likeCount={tweet.likeCount}
+            isRetweeted={tweet.isRetweeted}
+            isLiked={tweet.isLiked}
           />
         );
       })}

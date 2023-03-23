@@ -36,6 +36,16 @@ h1 {
   line-height: 1.1;
 }
 
+.tweet {
+  border: 1px solid black;
+  margin: 10px;
+}
+
+.user {
+  border: 1px solid black;
+  margin: 10px;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;

@@ -13,10 +13,13 @@ function showTweet(props: {
   retweetCount: number;
   quoteCount: number;
   likeCount: number;
+  isRetweeted: boolean;
+  isLiked: boolean;
 }) {
   const navigate = useNavigate();
   return (
-    <div>
+    <div className="tweet">
+      <div>ツイートID：{props.tweetID}</div>
       <div>名前：{props.displayName}</div>
       <div>
         ユーザー名：
@@ -25,10 +28,14 @@ function showTweet(props: {
         </Link>
       </div>
       <div>ツイート：{props.content}</div>
+      {props.reply.Valid && <div>リプライ{props.reply.Int64}</div>}
+      {props.quote.Valid && <div>引用{props.quote.Int64}</div>}
       <div>リプライ数：{props.replyCount}</div>
       <div>リツイート数：{props.retweetCount}</div>
       <div>引用数：{props.quoteCount}</div>
       <div>いいね数：{props.likeCount}</div>
+      <div>リツイート済み：{props.isRetweeted ? 1 : 0}</div>
+      <div>いいね済み：{props.isLiked ? 1 : 0}</div>
       <div>
         <button
           type="button"

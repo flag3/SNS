@@ -6,6 +6,10 @@ function showTweet(props: {
   username: string;
   displayName: string;
   bio: { String: string; Valid: boolean };
+  location: { String: string; Valid: boolean };
+  website: { String: string; Valid: boolean };
+  followingCount: number;
+  followerCount: number;
   isFollowed: boolean;
   isFollowing: boolean;
 }) {
@@ -21,6 +25,10 @@ function showTweet(props: {
       <div>フォローされてるか：{props.isFollowed ? 1 : 0}</div>
       <div>フォローしているか：{props.isFollowing ? 1 : 0}</div>
       {props.bio.Valid && <div>自己紹介：{props.bio.String}</div>}
+      <div>場所：{props.location.String}</div>
+      <div>Web：{props.website.String}</div>
+      <div>{props.followerCount} フォロワー</div>
+      <div>{props.followingCount} フォロー中</div>
       <div>
         <button
           type="submit"

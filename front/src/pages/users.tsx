@@ -19,7 +19,7 @@ function User() {
 
   return (
     <div>
-      <h2>ツイート一覧</h2>
+      <h2>ユーザー一覧</h2>
       {userList.map((user) => {
         return (
           <ShowUser
@@ -28,6 +28,8 @@ function User() {
             username={user.username}
             displayName={user.displayName}
             bio={user.bio}
+            isFollowed={user.isFollowed}
+            isFollowing={user.isFollowing}
           />
         );
       })}

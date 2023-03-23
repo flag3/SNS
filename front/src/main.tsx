@@ -8,10 +8,11 @@ import Login from "./pages/login";
 import Logout from "./pages/logout";
 import PostTweet from "./pages/postTweet";
 import GetTweet from "./pages/getTweet";
-import Favorite from "./pages/favorite";
+import Like from "./pages/like";
 import Following from "./pages/following";
 import Followers from "./pages/followers";
 import UserID from "./pages/userid";
+import TweetID from "./pages/tweetid";
 import Home from "./pages/home";
 import Users from "./pages/users";
 import Sidebar from "./components/sidebar";
@@ -20,7 +21,6 @@ import "./index.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <Sidebar />
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/signup" element={<Signup />} />
@@ -30,6 +30,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           path="/tweet"
           element={
             <PrivateRoute>
+              <Sidebar />
               <PostTweet />
             </PrivateRoute>
           }
@@ -38,6 +39,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           path="/tweets"
           element={
             <PrivateRoute>
+              <Sidebar />
               <GetTweet />
             </PrivateRoute>
           }
@@ -46,30 +48,34 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           path="/users/:username"
           element={
             <PrivateRoute>
+              <Sidebar />
               <UserID />
             </PrivateRoute>
           }
         />
         <Route
-          path="/:userID/likes"
+          path="/users/:username/likes"
           element={
             <PrivateRoute>
-              <Favorite />
+              <Sidebar />
+              <Like />
             </PrivateRoute>
           }
         />
         <Route
-          path="/:userID/following"
+          path="/users/:username/following"
           element={
             <PrivateRoute>
+              <Sidebar />
               <Following />
             </PrivateRoute>
           }
         />
         <Route
-          path="/:userID/followers"
+          path="/users/:username/followers"
           element={
             <PrivateRoute>
+              <Sidebar />
               <Followers />
             </PrivateRoute>
           }
@@ -78,6 +84,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           path="/home"
           element={
             <PrivateRoute>
+              <Sidebar />
               <Home />
             </PrivateRoute>
           }
@@ -86,7 +93,17 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           path="/users"
           element={
             <PrivateRoute>
+              <Sidebar />
               <Users />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/tweets/:tweetID"
+          element={
+            <PrivateRoute>
+              <Sidebar />
+              <TweetID />
             </PrivateRoute>
           }
         />

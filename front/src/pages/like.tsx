@@ -1,22 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ShowUserDetail from "./showUserDetail";
 import ShowTweet from "./showTweet";
 
-function Tweet() {
+function Tweets() {
   const { username } = useParams();
-  const [userList, setUserList] = useState([]);
   const [tweetList, setTweetList] = useState([]);
 
   useEffect(() => {
-    axios.get(`/api/users/${username}`).then((res) => {
-      setUserList(res.data);
-    });
-  }, [username]);
-
-  useEffect(() => {
-    axios.get(`/api/users/${username}/tweets`).then((res) => {
+    axios.get(`/api/users/${username}/likes`).then((res) => {
       setTweetList(res.data);
     });
   }, [username]);
@@ -27,25 +19,7 @@ function Tweet() {
 
   return (
     <div>
-      <h2>@{username}</h2>
-      {userList.map((user) => {
-        return (
-          <ShowUserDetail
-            key={user.userID}
-            userID={user.userID}
-            username={user.username}
-            displayName={user.displayName}
-            bio={user.bio}
-            location={user.location}
-            website={user.website}
-            followingCount={user.followingCount}
-            followerCount={user.followerCount}
-            isFollowed={user.isFollowed}
-            isFollowing={user.isFollowing}
-          />
-        );
-      })}
-      <h2>@{username}さんのツイート</h2>
+      <h2>@{username}がいいねしました</h2>
       {tweetList.map((tweet) => {
         return (
           <ShowTweet
@@ -70,4 +44,4 @@ function Tweet() {
   );
 }
 
-export default Tweet;
+export default Tweets;

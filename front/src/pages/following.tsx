@@ -1,31 +1,36 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import ShowUser from "./showUser";
 
 function Following() {
-  const { userID } = useParams();
-  const [accountInfo, setAccountInfo] = useState([]);
+  const { username } = useParams();
+  const [userList, setUserList] = useState([]);
 
   useEffect(() => {
-    axios.get(`/api/${userID}/following`).then((res) => {
-      setAccountInfo(res.data);
+    axios.get(`/api/users/${username}/following`).then((res) => {
+      setUserList(res.data);
     });
-  }, [userID]);
+  }, [username]);
 
   useEffect(() => {
-    console.log(accountInfo);
-  }, [accountInfo]);
+    console.log(userList);
+  }, [userList]);
 
   return (
     <div>
-      <h2>{userID}さんがフォロー中</h2>
-      {accountInfo.map((account: { userID: string; username: string }) => {
+      <h2>{username}がフォロー中</h2>
+      {userList.map((user) => {
         return (
-          <div key={account.userID}>
-            <br></br>
-            <div>ユーザーID：{account.userID}</div>
-            <div>表示名：{account.username}</div>
-          </div>
+          <ShowUser
+            key={user.userID}
+            userID={user.userID}
+            username={user.username}
+            displayName={user.displayName}
+            bio={user.bio}
+            isFollowed={user.isFollowed}
+            isFollowing={user.isFollowing}
+          />
         );
       })}
     </div>
