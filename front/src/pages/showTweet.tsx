@@ -25,8 +25,8 @@ function showTweet(props: {
   const navigate = useNavigate();
   const [isRetweeted, setIsRetweeted] = useState(props.isRetweeted);
   const [retweetCount, setRetweetCount] = useState(props.retweetCount);
-  const [isLiked, setIsLiked] = useState(props.isRetweeted);
-  const [likeCount, setLikeCount] = useState(props.retweetCount);
+  const [isLiked, setIsLiked] = useState(props.isLiked);
+  const [likeCount, setLikeCount] = useState(props.likeCount);
   return (
     <div className="tweet">
       <div>

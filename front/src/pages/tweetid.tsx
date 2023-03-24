@@ -8,11 +8,7 @@ function TweetID() {
   const navigate = useNavigate();
   const [content, setContent] = useState("");
   const [tweetList, setTweetList] = useState([]);
-
-  console.log(tweetID);
-  console.log(typeof tweetID);
-  console.log(Number(tweetID));
-  console.log(typeof Number(tweetID));
+  const [replyList, setReplyList] = useState([]);
 
   const onClickHandler1 = useCallback(
     (e) => {
@@ -48,9 +44,18 @@ function TweetID() {
     console.log(tweetList);
   }, [tweetList]);
 
+  useEffect(() => {
+    axios.get(`/api/tweets/${tweetID}/reply`).then((res) => {
+      setReplyList(res.data);
+    });
+  }, [tweetID]);
+
+  useEffect(() => {
+    console.log(replyList);
+  }, [replyList]);
+
   return (
     <div>
-      <h2>@{tweetID}さんのツイート</h2>
       {tweetList.map((tweet) => {
         return (
           <ShowTweetDetail
@@ -90,6 +95,26 @@ function TweetID() {
           </button>
         </div>
       </form>
+      {replyList.map((tweet) => {
+        return (
+          <ShowTweetDetail
+            key={tweet.tweetID}
+            tweetID={tweet.tweetID}
+            userID={tweet.userID}
+            username={tweet.username}
+            displayName={tweet.displayName}
+            content={tweet.content}
+            reply={tweet.reply}
+            quote={tweet.quote}
+            replyCount={tweet.replyCount}
+            retweetCount={tweet.retweetCount}
+            quoteCount={tweet.quoteCount}
+            likeCount={tweet.likeCount}
+            isRetweeted={tweet.isRetweeted}
+            isLiked={tweet.isLiked}
+          />
+        );
+      })}
     </div>
   );
 }

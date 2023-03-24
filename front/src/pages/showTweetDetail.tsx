@@ -25,8 +25,8 @@ function showTweet(props: {
   const navigate = useNavigate();
   const [isRetweeted, setIsRetweeted] = useState(props.isRetweeted);
   const [retweetCount, setRetweetCount] = useState(props.retweetCount);
-  const [isLiked, setIsLiked] = useState(props.isRetweeted);
-  const [likeCount, setLikeCount] = useState(props.retweetCount);
+  const [isLiked, setIsLiked] = useState(props.isLiked);
+  const [likeCount, setLikeCount] = useState(props.likeCount);
   return (
     <div className="tweet">
       <div>
@@ -83,6 +83,7 @@ function showTweet(props: {
           {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </button>
       </div>
+      {props.replyCount ? <div>{props.replyCount}件の返信</div> : ""}
       {retweetCount ? <div>{retweetCount}件のリツイート</div> : ""}
       {props.quoteCount ? <div>{props.quoteCount}件の引用</div> : ""}
       {likeCount ? <div>{likeCount}件のいいね</div> : ""}

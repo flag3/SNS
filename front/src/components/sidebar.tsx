@@ -24,20 +24,12 @@ const SidebarData = [
     link: "/profile",
   },
   {
-    title: "サインアップ",
-    link: "/signup",
-  },
-  {
     title: "ログイン",
     link: "/login",
   },
   {
     title: "ログアウト",
     link: "/logout",
-  },
-  {
-    title: "タイトル",
-    link: "/",
   },
 ];
 
