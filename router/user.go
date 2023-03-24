@@ -2,7 +2,6 @@ package router
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -95,72 +94,4 @@ func getUserHandler(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, users)
-}
-
-func putUserDisplayNameHandler(c echo.Context) error {
-	username := c.Get("username").(string)
-
-	user := UserDetail{}
-	userState := "UPDATE user SET DisplayName = ? WHERE Username = ?"
-
-	if err := c.Bind(&user); err != nil {
-		return c.JSON(http.StatusBadRequest, user)
-	}
-
-	fmt.Println(user)
-
-	if user.DisplayName == "" {
-		return c.String(http.StatusBadRequest, "empty string")
-	}
-
-	database.DB.Exec(userState, user.DisplayName, username)
-	return c.JSON(http.StatusOK, user)
-}
-
-func putUserBioHandler(c echo.Context) error {
-	username := c.Get("username").(string)
-
-	user := UserDetail{}
-	userState := "UPDATE user SET Bio = ? WHERE Username = ?"
-
-	if err := c.Bind(&user); err != nil {
-		return c.JSON(http.StatusBadRequest, user)
-	}
-
-	fmt.Println(user)
-
-	database.DB.Exec(userState, user.Bio.String, username)
-	return c.JSON(http.StatusOK, user)
-}
-
-func putUserLocationHandler(c echo.Context) error {
-	username := c.Get("username").(string)
-
-	user := UserDetail{}
-	userState := "UPDATE user SET Location = ? WHERE Username = ?"
-
-	if err := c.Bind(&user); err != nil {
-		return c.JSON(http.StatusBadRequest, user)
-	}
-
-	fmt.Println(user)
-
-	database.DB.Exec(userState, user.Location.String, username)
-	return c.JSON(http.StatusOK, user)
-}
-
-func putUserWebsiteHandler(c echo.Context) error {
-	username := c.Get("username").(string)
-
-	user := UserDetail{}
-	userState := "UPDATE user SET Website = ? WHERE Username = ?"
-
-	if err := c.Bind(&user); err != nil {
-		return c.JSON(http.StatusBadRequest, user)
-	}
-
-	fmt.Println(user)
-
-	database.DB.Exec(userState, user.Website.String, username)
-	return c.JSON(http.StatusOK, user)
 }

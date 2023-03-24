@@ -1,9 +1,16 @@
 import axios from "axios";
-import { useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useState, useEffect } from "react";
+import ShowUserDetail from "./showUserDetail";
 
 function Profile() {
-  const navigate = useNavigate();
+  const [userList, setUserList] = useState([]);
+
+  useEffect(() => {
+    axios.get(`/api/whoami`).then((res) => {
+      setUserList(res.data);
+    });
+  }, []);
+
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
@@ -15,7 +22,7 @@ function Profile() {
       axios
         .put("/api/profile/userDisplayName", { displayName: displayName })
         .then(() => {
-          navigate("/home");
+          window.location.reload();
         });
     },
     [displayName]
@@ -27,7 +34,7 @@ function Profile() {
       axios
         .put("/api/profile/userBio", { bio: { String: bio, Valid: true } })
         .then(() => {
-          navigate("/home");
+          window.location.reload();
         });
     },
     [bio]
@@ -41,7 +48,7 @@ function Profile() {
           location: { String: location, Valid: true },
         })
         .then(() => {
-          navigate("/home");
+          window.location.reload();
         });
     },
     [location]
@@ -55,7 +62,7 @@ function Profile() {
           website: { String: website, Valid: true },
         })
         .then(() => {
-          navigate("/home");
+          window.location.reload();
         });
     },
     [website]
@@ -63,6 +70,23 @@ function Profile() {
 
   return (
     <div>
+      {userList.map((user) => {
+        return (
+          <ShowUserDetail
+            key={user.userID}
+            userID={user.userID}
+            username={user.username}
+            displayName={user.displayName}
+            bio={user.bio}
+            location={user.location}
+            website={user.website}
+            followingCount={user.followingCount}
+            followerCount={user.followerCount}
+            isFollowed={user.isFollowed}
+            isFollowing={user.isFollowing}
+          />
+        );
+      })}
       <form>
         <div>
           <label htmlFor="content">名前の変更</label>

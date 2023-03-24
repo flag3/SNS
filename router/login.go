@@ -25,12 +25,6 @@ type WithPasswordUser struct {
 	HashedPass string `json:"-"  db:"HashedPass"`
 }
 
-func getWhoAmIHandler(c echo.Context) error {
-	return c.JSON(http.StatusOK, Me{
-		Username: c.Get("username").(string),
-	})
-}
-
 func postSignUpHandler(c echo.Context) error {
 	req := LoginRequestBody{}
 	c.Bind(&req)

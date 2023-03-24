@@ -11,10 +11,10 @@ function Logout() {
       <button
         type="button"
         onClick={() => {
-          navigate("/login");
+          navigate("/");
         }}
       >
-        ログインする
+        Twitter
       </button>
     </div>
   );
