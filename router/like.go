@@ -52,19 +52,37 @@ func deleteLikeHandler(c echo.Context) error {
 }
 
 func getUserLikesHandler(c echo.Context) error {
-	username := c.Param("username")
-	userID := usernameToUserID(username)
+	loginUsername := c.Get("username").(string)
+	loginUserID := usernameToUserID(loginUsername)
+	paramUsername := c.Param("username")
+	paramUserID := usernameToUserID(paramUsername)
 
 	tweets := []TweetDetail{}
 	database.DB.Select(&tweets,
-		`SELECT t.TweetID, t.UserID, u.Username, u.DisplayName, t.Content, t.Reply, t.Quote, COUNT(DISTINCT t.Reply) as ReplyCount, COUNT(DISTINCT r.UserID) as RetweetCount, COUNT(DISTINCT t.Quote) as QuoteCount, COUNT(DISTINCT fa.UserID) as LikeCount
-		FROM tweet t
-		JOIN user u ON t.UserID = u.UserID
-		LEFT JOIN fav fa ON t.TweetID = fa.TweetID
-		LEFT JOIN retweet r ON t.TweetID = r.tweetID 
-    WHERE fa.userID = ? 
-		GROUP BY t.TweetID`,
-		userID)
+		`SELECT 
+      t.TweetID, 
+      t.UserID, 
+      u.Username, 
+      u.DisplayName, 
+      t.Content, 
+      t.Reply, 
+      t.Quote, 
+      (SELECT COUNT(*) FROM tweet WHERE Reply = t.TweetID) AS ReplyCount,
+      COUNT(DISTINCT r.UserID) AS RetweetCount, 
+      (SELECT COUNT(*) FROM tweet WHERE Quote = t.TweetID) AS QuoteCount,
+      COUNT(DISTINCT l.UserID) AS LikeCount, 
+      COUNT(DISTINCT CASE WHEN r.UserID = ? THEN r.UserID END) AS IsRetweeted,
+      COUNT(DISTINCT CASE WHEN l.UserID = ? THEN l.UserID END) AS IsLiked
+		FROM 
+      tweet t
+		  JOIN user u ON t.UserID = u.UserID
+		  LEFT JOIN retweet r ON t.TweetID = r.tweetID
+		  LEFT JOIN fav l ON t.TweetID = l.TweetID
+    WHERE 
+      EXISTS(SELECT 1 FROM fav WHERE TweetID = t.TweetID AND UserID = ?)
+		GROUP BY 
+      t.TweetID`,
+		loginUserID, loginUserID, paramUserID)
 	if tweets == nil {
 		return c.NoContent(http.StatusNotFound)
 	}
@@ -72,11 +90,30 @@ func getUserLikesHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, tweets)
 }
 
-func getLikeUsersHandler(c echo.Context) error {
+func getLikesHandler(c echo.Context) error {
+	username := c.Get("username").(string)
+	userID := usernameToUserID(username)
 	tweetID := c.Param("tweetID")
 
 	users := []User{}
-	database.DB.Select(&users, "SELECT user.UserID, user.Username, user.DisplayName, user.Bio FROM user JOIN fav ON user.UserID = fav.UserID WHERE fav.TweetID = ?", tweetID)
+	database.DB.Select(&users,
+		`SELECT 
+      u.UserID, 
+      u.Username, 
+      u.DisplayName, 
+      u.Bio,
+      COUNT(DISTINCT CASE WHEN f1.FolloweeUserID = ? THEN f1.FolloweeUserID END) AS IsFollowed,
+      COUNT(DISTINCT CASE WHEN f2.FollowerUserID = ? THEN f2.FollowerUserID END) AS IsFollowing
+    FROM 
+      user u
+      JOIN fav l ON u.UserID = l.UserID
+      LEFT JOIN follow f1 ON u.UserID = f1.FollowerUserID
+      LEFT JOIN follow f2 ON u.UserID = f2.FolloweeUserID
+    WHERE 
+      l.TweetID = ?
+    GROUP BY 
+      u.UserID`,
+		userID, userID, tweetID)
 	if users == nil {
 		return c.NoContent(http.StatusNotFound)
 	}

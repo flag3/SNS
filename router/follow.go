@@ -65,38 +65,10 @@ func deleteFollowHandler(c echo.Context) error {
 }
 
 func getFollowingHandler(c echo.Context) error {
-	username := c.Param("username")
-	userID := usernameToUserID(username)
-
-	users := []User{}
-
-	database.DB.Select(&users,
-		`SELECT 
-      u.UserID, 
-      u.Username, 
-      u.DisplayName, 
-      u.Bio,
-      COUNT(DISTINCT CASE WHEN f1.FolloweeUserID = ? THEN f1.FolloweeUserID END) AS IsFollowed,
-      COUNT(DISTINCT CASE WHEN f2.FollowerUserID = ? THEN f2.FollowerUserID END) AS IsFollowing
-    FROM 
-      user u
-      LEFT JOIN follow f1 ON u.UserID = f1.FollowerUserID
-      LEFT JOIN follow f2 ON u.UserID = f2.FolloweeUserID
-    WHERE f2.FollowerUserID = ?
-    GROUP BY 
-      u.UserID`,
-		userID, userID, userID)
-	if users == nil {
-		return c.NoContent(http.StatusNotFound)
-	}
-	fmt.Println(users)
-
-	return c.JSON(http.StatusOK, users)
-}
-
-func getFollowersHandler(c echo.Context) error {
-	username := c.Param("username")
-	userID := usernameToUserID(username)
+	loginUsername := c.Get("username").(string)
+	loginUserID := usernameToUserID(loginUsername)
+	paramUsername := c.Param("username")
+	paramUserID := usernameToUserID(paramUsername)
 
 	users := []User{}
 
@@ -113,10 +85,43 @@ func getFollowersHandler(c echo.Context) error {
       LEFT JOIN follow f1 ON u.UserID = f1.FollowerUserID
       LEFT JOIN follow f2 ON u.UserID = f2.FolloweeUserID
     WHERE 
-      f1.FolloweeUserID = ?
+      EXISTS(SELECT 1 FROM follow WHERE FolloweeUserID = u.UserID AND FollowerUserID = ?)
     GROUP BY 
       u.UserID`,
-		userID, userID, userID)
+		loginUserID, loginUserID, paramUserID)
+	if users == nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+	fmt.Println(users)
+
+	return c.JSON(http.StatusOK, users)
+}
+
+func getFollowersHandler(c echo.Context) error {
+	loginUsername := c.Get("username").(string)
+	loginUserID := usernameToUserID(loginUsername)
+	paramUsername := c.Param("username")
+	paramUserID := usernameToUserID(paramUsername)
+
+	users := []User{}
+
+	database.DB.Select(&users,
+		`SELECT 
+      u.UserID, 
+      u.Username, 
+      u.DisplayName, 
+      u.Bio,
+      COUNT(DISTINCT CASE WHEN f1.FolloweeUserID = ? THEN f1.FolloweeUserID END) AS IsFollowed,
+      COUNT(DISTINCT CASE WHEN f2.FollowerUserID = ? THEN f2.FollowerUserID END) AS IsFollowing
+    FROM 
+      user u
+      LEFT JOIN follow f1 ON u.UserID = f1.FollowerUserID
+      LEFT JOIN follow f2 ON u.UserID = f2.FolloweeUserID
+    WHERE 
+      EXISTS(SELECT 1 FROM follow WHERE FollowerUserID = u.UserID AND FolloweeUserID = ?)
+    GROUP BY 
+      u.UserID`,
+		loginUserID, loginUserID, paramUserID)
 	if users == nil {
 		return c.NoContent(http.StatusNotFound)
 	}

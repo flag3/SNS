@@ -52,10 +52,30 @@ func deleteRetweetHandler(c echo.Context) error {
 }
 
 func getRetweetUsersHandler(c echo.Context) error {
+	username := c.Get("username").(string)
+	userID := usernameToUserID(username)
 	tweetID := c.Param("tweetID")
 
 	users := []User{}
-	database.DB.Select(&users, "SELECT user.UserID, user.Username, user.DisplayName, user.Bio FROM user JOIN retweet ON user.UserID = retweet.UserID WHERE retweet.TweetID = ?", tweetID)
+	database.DB.Select(&users,
+		`SELECT 
+      u.UserID, 
+      u.Username, 
+      u.DisplayName, 
+      u.Bio,
+      COUNT(DISTINCT CASE WHEN f1.FolloweeUserID = ? THEN f1.FolloweeUserID END) AS IsFollowed,
+      COUNT(DISTINCT CASE WHEN f2.FollowerUserID = ? THEN f2.FollowerUserID END) AS IsFollowing
+    FROM 
+      user u
+      JOIN retweet r ON u.UserID = r.UserID
+      LEFT JOIN follow f1 ON u.UserID = f1.FollowerUserID
+      LEFT JOIN follow f2 ON u.UserID = f2.FolloweeUserID
+    WHERE 
+      r.TweetID = ?
+    GROUP BY 
+      u.UserID`,
+		userID, userID, tweetID,
+	)
 	if users == nil {
 		return c.NoContent(http.StatusNotFound)
 	}

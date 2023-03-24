@@ -19,16 +19,17 @@ func NewServer(e *echo.Echo) {
 	withLogin.GET("/tweets/:tweetID", getTweetHandler)
 	withLogin.GET("/tweets/:tweetID/reply", getReplyHandler)
 	withLogin.POST("/tweets/:tweetID/reply", postReplyHandler)
+	withLogin.GET("/tweets/:tweetID/quote", getQuoteHandler)
 	withLogin.POST("/tweets/:tweetID/quote", postQuoteHandler)
 	//withLogin.PUT("/tweets/:tweetID", postTweetHandler)
 	withLogin.DELETE("/tweets/:tweetID", deleteTweetHandler)
 	withLogin.GET("/users/:username/tweets", getUserTweetsHandler)
 	withLogin.GET("/home", getHomeTweetHandler)
 
+	withLogin.GET("/tweets/:tweetID/likes", getLikesHandler)
 	withLogin.POST("/tweets/:tweetID/likes", postLikeHandler)
 	withLogin.DELETE("/tweets/:tweetID/likes", deleteLikeHandler)
 	withLogin.GET("/users/:username/likes", getUserLikesHandler)
-	withLogin.GET("/tweets/:tweetID/likes/users", getLikeUsersHandler)
 
 	withLogin.POST("/users/:username/follows", postFollowHandler)
 	withLogin.DELETE("/users/:username/follows", deleteFollowHandler)

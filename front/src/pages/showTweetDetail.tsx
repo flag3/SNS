@@ -83,10 +83,18 @@ function showTweet(props: {
           {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </button>
       </div>
-      {props.replyCount ? <div>{props.replyCount}件の返信</div> : ""}
-      {retweetCount ? <div>{retweetCount}件のリツイート</div> : ""}
-      {props.quoteCount ? <div>{props.quoteCount}件の引用</div> : ""}
-      {likeCount ? <div>{likeCount}件のいいね</div> : ""}
+      <Link to={`/tweets/${props.tweetID}`} key="reply">
+        {props.replyCount ? <div>{props.replyCount}件の返信</div> : ""}
+      </Link>
+      <Link to={`/tweets/${props.tweetID}/retweets`} key="retweet">
+        {retweetCount ? <div>{retweetCount}件のリツイート</div> : ""}
+      </Link>
+      <Link to={`/tweets/${props.tweetID}/quotes`} key="quote">
+        {props.quoteCount ? <div>{props.quoteCount}件の引用</div> : ""}
+      </Link>
+      <Link to={`/tweets/${props.tweetID}/likes`} key="like">
+        {likeCount ? <div>{likeCount}件のいいね</div> : ""}
+      </Link>
     </div>
   );
 }

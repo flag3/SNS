@@ -48,13 +48,18 @@ function showTweet(props: {
       <div>場所：{props.location.String}</div>
       <div>Web：{props.website.String}</div>
       <div>
-        <Link to={`/users/${props.username}/followers`} key={props.username}>
+        <Link to={`/users/${props.username}/followers`} key="followers">
           {props.followerCount} フォロワー
         </Link>
       </div>
       <div>
-        <Link to={`/users/${props.username}/following`} key={props.username}>
+        <Link to={`/users/${props.username}/following`} key="following">
           {props.followingCount} フォロー中
+        </Link>
+      </div>
+      <div>
+        <Link to={`/users/${props.username}/likes`} key="likes">
+          {props.displayName}のいいね
         </Link>
       </div>
     </div>

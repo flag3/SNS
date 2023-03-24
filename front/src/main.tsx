@@ -8,7 +8,8 @@ import Login from "./pages/login";
 import Logout from "./pages/logout";
 import PostTweet from "./pages/postTweet";
 import GetTweet from "./pages/getTweet";
-import Like from "./pages/like";
+import UserLike from "./pages/userLikes";
+import LikeUser from "./pages/likeUsers";
 import Following from "./pages/following";
 import Followers from "./pages/followers";
 import UserID from "./pages/userid";
@@ -16,6 +17,8 @@ import TweetID from "./pages/tweetid";
 import Home from "./pages/home";
 import Users from "./pages/users";
 import Profile from "./pages/profile";
+import Quote from "./pages/quote";
+import Retweet from "./pages/retweet";
 import Sidebar from "./components/sidebar";
 import NonSidebar from "./components/nonsidebar";
 import "./index.css";
@@ -61,7 +64,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           element={
             <PrivateRoute>
               <Sidebar />
-              <Like />
+              <UserLike />
             </PrivateRoute>
           }
         />
@@ -107,6 +110,33 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <PrivateRoute>
               <Sidebar />
               <TweetID />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/tweets/:tweetID/quotes"
+          element={
+            <PrivateRoute>
+              <Sidebar />
+              <Quote />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/tweets/:tweetID/retweets"
+          element={
+            <PrivateRoute>
+              <Sidebar />
+              <Retweet />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/tweets/:tweetID/likes"
+          element={
+            <PrivateRoute>
+              <Sidebar />
+              <LikeUser />
             </PrivateRoute>
           }
         />

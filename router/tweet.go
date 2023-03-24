@@ -165,7 +165,7 @@ func getTweetHandler(c echo.Context) error {
       (SELECT COUNT(*) FROM tweet WHERE Reply = t.TweetID) AS ReplyCount,
       COUNT(DISTINCT r.UserID) AS RetweetCount, 
       (SELECT COUNT(*) FROM tweet WHERE Quote = t.TweetID) AS QuoteCount,
-      COUNT(DISTINCT l.UserID) as LikeCount,
+      COUNT(DISTINCT l.UserID) AS LikeCount,
       COUNT(DISTINCT CASE WHEN r.UserID = ? THEN r.UserID END) AS IsRetweeted,
       COUNT(DISTINCT CASE WHEN l.UserID = ? THEN l.UserID END) AS IsLiked
     FROM 
@@ -212,7 +212,47 @@ func getReplyHandler(c echo.Context) error {
 		  LEFT JOIN retweet r ON t.TweetID = r.tweetID
 		  LEFT JOIN fav l ON t.TweetID = l.TweetID
     WHERE 
-      t.Reply = ?
+      Reply = ?
+		GROUP BY 
+      t.TweetID`,
+		userID, userID, tweetID,
+	)
+	if tweets == nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	return c.JSON(http.StatusOK, tweets)
+}
+
+func getQuoteHandler(c echo.Context) error {
+	tweetID := c.Param("tweetID")
+	username := c.Get("username").(string)
+	userID := usernameToUserID(username)
+
+	tweets := []TweetDetail{}
+
+	database.DB.Select(&tweets,
+		`SELECT 
+      t.TweetID, 
+      t.UserID, 
+      u.Username, 
+      u.DisplayName, 
+      t.Content, 
+      t.Reply, 
+      t.Quote, 
+      (SELECT COUNT(*) FROM tweet WHERE Reply = t.TweetID) AS ReplyCount,
+      COUNT(DISTINCT r.UserID) AS RetweetCount, 
+      (SELECT COUNT(*) FROM tweet WHERE Quote = t.TweetID) AS QuoteCount,
+      COUNT(DISTINCT l.UserID) AS LikeCount, 
+      COUNT(DISTINCT CASE WHEN r.UserID = ? THEN r.UserID END) AS IsRetweeted,
+      COUNT(DISTINCT CASE WHEN l.UserID = ? THEN l.UserID END) AS IsLiked
+		FROM 
+      tweet t
+		  JOIN user u ON t.UserID = u.UserID
+		  LEFT JOIN retweet r ON t.TweetID = r.tweetID
+		  LEFT JOIN fav l ON t.TweetID = l.TweetID
+    WHERE 
+      t.Quote = ?
 		GROUP BY 
       t.TweetID`,
 		userID, userID, tweetID,
@@ -252,7 +292,7 @@ func getUserTweetsHandler(c echo.Context) error {
       (SELECT COUNT(*) FROM tweet WHERE Reply = t.TweetID) AS ReplyCount,
       COUNT(DISTINCT r.UserID) AS RetweetCount, 
       (SELECT COUNT(*) FROM tweet WHERE Quote = t.TweetID) AS QuoteCount,
-      COUNT(DISTINCT l.UserID) as LikeCount,
+      COUNT(DISTINCT l.UserID) AS LikeCount,
       COUNT(DISTINCT CASE WHEN r.UserID = ? THEN r.UserID END) AS IsRetweeted,
       COUNT(DISTINCT CASE WHEN l.UserID = ? THEN l.UserID END) AS IsLiked
 		FROM 
@@ -288,7 +328,7 @@ func getHomeTweetHandler(c echo.Context) error {
       (SELECT COUNT(*) FROM tweet WHERE Reply = t.TweetID) AS ReplyCount,
       COUNT(DISTINCT r.UserID) AS RetweetCount, 
       (SELECT COUNT(*) FROM tweet WHERE Quote = t.TweetID) AS QuoteCount,
-      COUNT(DISTINCT l.UserID) as LikeCount,
+      COUNT(DISTINCT l.UserID) AS LikeCount,
       COUNT(DISTINCT CASE WHEN r.UserID = ? THEN r.UserID END) AS IsRetweeted,
       COUNT(DISTINCT CASE WHEN l.UserID = ? THEN l.UserID END) AS IsLiked
     FROM 
