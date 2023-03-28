@@ -32,6 +32,13 @@
   background-color: #424350;
 }
 
-.SidebarList #active {
+.SidebarList .active {
+  width: 100%;
+  height: 60px;
   background-color: #525365;
+  /* border: 1px solid black; */
+  display: flex;
+  color: white;
+  justify-content: center;
+  align-items: center;
 }

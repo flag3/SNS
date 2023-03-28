@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ReplyIcon from "@mui/icons-material/Reply";
 import RepeatIcon from "@mui/icons-material/Repeat";
 import RepeatOnIcon from "@mui/icons-material/RepeatOn";
@@ -24,7 +24,6 @@ type Tweet = {
 };
 
 function showTweet(props: Tweet) {
-  const navigate = useNavigate();
   const [isRetweeted, setIsRetweeted] = useState(props.isRetweeted);
   const [retweetCount, setRetweetCount] = useState(props.retweetCount);
   const [isLiked, setIsLiked] = useState(props.isLiked);
@@ -43,16 +42,12 @@ function showTweet(props: Tweet) {
       </div>
       <div>{props.content}</div>
       <div>
-        <button
-          type="button"
-          onClick={() => {
-            navigate(`/tweets/${props.tweetID}`);
-          }}
-          key={props.tweetID}
-        >
-          <ReplyIcon />
-          {props.replyCount}
-        </button>
+        <Link to={`/tweets/${props.tweetID}`}>
+          <button type="button" key={props.tweetID}>
+            <ReplyIcon />
+            {props.replyCount}
+          </button>
+        </Link>
         <button
           type="button"
           onClick={() => {

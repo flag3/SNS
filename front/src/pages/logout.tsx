@@ -1,21 +1,15 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Logout() {
   axios.get("/api/logout");
-  const navigate = useNavigate();
 
   return (
     <div>
       <h2>ログアウトしました</h2>
-      <button
-        type="button"
-        onClick={() => {
-          navigate("/");
-        }}
-      >
-        Twitter
-      </button>
+      <Link to="/">
+        <button type="button">Twitter</button>
+      </Link>
     </div>
   );
 }

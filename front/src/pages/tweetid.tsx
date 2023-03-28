@@ -10,7 +10,7 @@ function TweetID() {
   const [tweetList, setTweetList] = useState([]);
   const [replyList, setReplyList] = useState([]);
 
-  const onClickHandler1 = useCallback(
+  const onClickReplyHandler = useCallback(
     (e) => {
       e.preventDefault();
       axios
@@ -22,7 +22,7 @@ function TweetID() {
     [content]
   );
 
-  const onClickHandler2 = useCallback(
+  const onClickQuoteHandler = useCallback(
     (e) => {
       e.preventDefault();
       axios
@@ -87,10 +87,10 @@ function TweetID() {
           ></input>
         </div>
         <div>
-          <button type="submit" onClick={onClickHandler1}>
+          <button type="submit" onClick={onClickReplyHandler}>
             リプライ
           </button>
-          <button type="submit" onClick={onClickHandler2}>
+          <button type="submit" onClick={onClickQuoteHandler}>
             引用リツイート
           </button>
         </div>

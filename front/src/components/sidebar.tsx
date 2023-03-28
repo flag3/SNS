@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./sidebar.css";
 
 const SidebarData = [
@@ -34,22 +34,20 @@ const SidebarData = [
 ];
 
 const Sidebar = () => {
-  const navigate = useNavigate();
   return (
     <div className="Sidebar">
       <ul className="SidebarList">
         {SidebarData.map((value, key) => {
           return (
-            <li
+            <NavLink
+              to={value.link}
               key={key}
-              id={window.location.pathname === value.link ? "active" : ""}
-              className="row"
-              onClick={() => {
-                navigate(value.link);
-              }}
+              className={({ isActive, isPending }) =>
+                isPending ? "pending" : isActive ? "active" : "row"
+              }
             >
               <div id="title">{value.title}</div>
-            </li>
+            </NavLink>
           );
         })}
       </ul>
