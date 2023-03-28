@@ -16,7 +16,7 @@ function Profile() {
   const [location, setLocation] = useState("");
   const [website, setWebsite] = useState("");
 
-  const onClickHandler1 = useCallback(
+  const onClickDisplayNameHandler = useCallback(
     (e) => {
       e.preventDefault();
       axios
@@ -28,7 +28,7 @@ function Profile() {
     [displayName]
   );
 
-  const onClickHandler2 = useCallback(
+  const onClickBioHandler = useCallback(
     (e) => {
       e.preventDefault();
       axios
@@ -40,7 +40,7 @@ function Profile() {
     [bio]
   );
 
-  const onClickHandler3 = useCallback(
+  const onClickLocationHandler = useCallback(
     (e) => {
       e.preventDefault();
       axios
@@ -54,7 +54,7 @@ function Profile() {
     [location]
   );
 
-  const onClickHandler4 = useCallback(
+  const onClickWebsiteHandler = useCallback(
     (e) => {
       e.preventDefault();
       axios
@@ -98,7 +98,7 @@ function Profile() {
           ></input>
         </div>
         <div>
-          <button type="submit" onClick={onClickHandler1}>
+          <button type="submit" onClick={onClickDisplayNameHandler}>
             変更する
           </button>
         </div>
@@ -114,7 +114,7 @@ function Profile() {
           ></input>
         </div>
         <div>
-          <button type="submit" onClick={onClickHandler2}>
+          <button type="submit" onClick={onClickBioHandler}>
             変更する
           </button>
         </div>
@@ -130,7 +130,7 @@ function Profile() {
           ></input>
         </div>
         <div>
-          <button type="submit" onClick={onClickHandler3}>
+          <button type="submit" onClick={onClickLocationHandler}>
             変更する
           </button>
         </div>
@@ -146,7 +146,7 @@ function Profile() {
           ></input>
         </div>
         <div>
-          <button type="submit" onClick={onClickHandler4}>
+          <button type="submit" onClick={onClickWebsiteHandler}>
             変更する
           </button>
         </div>

@@ -34,11 +34,11 @@ const SidebarData = [
 ];
 
 const Sidebar = () => {
+  const navigate = useNavigate();
   return (
     <div className="Sidebar">
       <ul className="SidebarList">
         {SidebarData.map((value, key) => {
-          const navigate = useNavigate();
           return (
             <li
               key={key}

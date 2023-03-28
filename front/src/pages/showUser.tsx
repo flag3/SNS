@@ -2,14 +2,16 @@ import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-function showUser(props: {
+type User = {
   userID: number;
   username: string;
   displayName: string;
   bio: { String: string; Valid: boolean };
   isFollowed: boolean;
   isFollowing: boolean;
-}) {
+};
+
+function showUser(props: User) {
   const [isFollowing, setIsFollowing] = useState(props.isFollowing);
   return (
     <div className="user">
@@ -29,11 +31,13 @@ function showUser(props: {
           type="submit"
           onClick={() => {
             if (isFollowing) {
-              axios.delete(`/api/users/${props.username}/follows`);
-              setIsFollowing(!isFollowing);
+              axios.delete(`/api/users/${props.username}/follows`).then(() => {
+                setIsFollowing(!isFollowing);
+              });
             } else {
-              axios.post(`/api/users/${props.username}/follows`);
-              setIsFollowing(!isFollowing);
+              axios.post(`/api/users/${props.username}/follows`).then(() => {
+                setIsFollowing(!isFollowing);
+              });
             }
           }}
         >

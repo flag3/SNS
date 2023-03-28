@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-function showTweet(props: {
+type UserDetail = {
   userID: number;
   username: string;
   displayName: string;
@@ -13,9 +13,10 @@ function showTweet(props: {
   followerCount: number;
   isFollowed: boolean;
   isFollowing: boolean;
-}) {
+};
+
+function showUserDetail(props: UserDetail) {
   const [isFollowing, setIsFollowing] = useState(props.isFollowing);
-  const navigate = useNavigate();
   return (
     <div className="user">
       <div>
@@ -34,11 +35,13 @@ function showTweet(props: {
           type="submit"
           onClick={() => {
             if (isFollowing) {
-              axios.delete(`/api/users/${props.username}/follows`);
-              setIsFollowing(!isFollowing);
+              axios.delete(`/api/users/${props.username}/follows`).then(() => {
+                setIsFollowing(!isFollowing);
+              });
             } else {
-              axios.post(`/api/users/${props.username}/follows`);
-              setIsFollowing(!isFollowing);
+              axios.post(`/api/users/${props.username}/follows`).then(() => {
+                setIsFollowing(!isFollowing);
+              });
             }
           }}
         >
@@ -69,4 +72,4 @@ function showTweet(props: {
   );
 }
 
-export default showTweet;
+export default showUserDetail;

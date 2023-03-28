@@ -7,7 +7,7 @@ import RepeatOnIcon from "@mui/icons-material/RepeatOn";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
-function showTweet(props: {
+type TweetDetail = {
   tweetID: number;
   userID: number;
   username: string;
@@ -21,7 +21,9 @@ function showTweet(props: {
   likeCount: number;
   isRetweeted: boolean;
   isLiked: boolean;
-}) {
+};
+
+function showTweetDetail(props: TweetDetail) {
   const navigate = useNavigate();
   const [isRetweeted, setIsRetweeted] = useState(props.isRetweeted);
   const [retweetCount, setRetweetCount] = useState(props.retweetCount);
@@ -54,13 +56,15 @@ function showTweet(props: {
           type="button"
           onClick={() => {
             if (isRetweeted) {
-              axios.delete(`/api/tweets/${props.tweetID}/retweets`);
-              setIsRetweeted(!isRetweeted);
-              setRetweetCount(retweetCount - 1);
+              axios.delete(`/api/tweets/${props.tweetID}/retweets`).then(() => {
+                setIsRetweeted(!isRetweeted);
+                setRetweetCount(retweetCount - 1);
+              });
             } else {
-              axios.post(`/api/tweets/${props.tweetID}/retweets`);
-              setIsRetweeted(!isRetweeted);
-              setRetweetCount(retweetCount + 1);
+              axios.post(`/api/tweets/${props.tweetID}/retweets`).then(() => {
+                setIsRetweeted(!isRetweeted);
+                setRetweetCount(retweetCount + 1);
+              });
             }
           }}
         >
@@ -70,13 +74,15 @@ function showTweet(props: {
           type="button"
           onClick={() => {
             if (isLiked) {
-              axios.delete(`/api/tweets/${props.tweetID}/likes`);
-              setIsLiked(!isLiked);
-              setLikeCount(likeCount - 1);
+              axios.delete(`/api/tweets/${props.tweetID}/likes`).then(() => {
+                setIsLiked(!isLiked);
+                setLikeCount(likeCount - 1);
+              });
             } else {
-              axios.post(`/api/tweets/${props.tweetID}/likes`);
-              setIsLiked(!isLiked);
-              setLikeCount(likeCount + 1);
+              axios.post(`/api/tweets/${props.tweetID}/likes`).then(() => {
+                setIsLiked(!isLiked);
+                setLikeCount(likeCount + 1);
+              });
             }
           }}
         >
@@ -99,4 +105,4 @@ function showTweet(props: {
   );
 }
 
-export default showTweet;
+export default showTweetDetail;
