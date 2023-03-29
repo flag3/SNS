@@ -1,0 +1,434 @@
+openapi: 3.0.3
+info:
+  version: 1.0.11
+  title: SNS
+  description: twitter
+  contact:
+    name: flag3
+    url: https://github.com/flag3/SNS
+servers:
+  - url: http://localhost:5173/
+    description: local
+paths:
+  /users:
+    get:
+      summary: ユーザーのリストを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ユーザー情報の配列
+                items:
+                  $ref: "#/components/schemas/User"
+        "404":
+          description: Not Found
+      operationId: getUsers
+      tags:
+        - user
+      description: ユーザーのリストを取得します
+  /users/{username}:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    get:
+      summary: ユーザー詳細情報を取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ユーザー詳細情報の配列
+                items:
+                  $ref: "#/components/schemas/UserDetail"
+        "404":
+          description: Not Found
+      operationId: getUser
+      tags:
+        - user
+      description: 指定したユーザーの詳細情報を取得します
+  /tweets:
+    get:
+      summary: ツイートを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ツイートの配列
+                items:
+                  $ref: "#/components/schemas/Tweet"
+        "404":
+          description: Not Found
+      operationId: getTweets
+      tags:
+        - tweet
+      description: ツイートのリストを取得します
+    post:
+      summary: ツイートを投稿
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ツイート
+                items:
+                  $ref: "#/components/schemas/Tweet"
+        "400":
+          description: BadRequest
+      operationId: postTweets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tweet"
+      tags:
+        - tweet
+  /tweets/{tweetID}:
+    parameters:
+      - $ref: "#/components/parameters/tweetIDInPath"
+    get:
+      summary: 指定したツイートを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ツイートの配列
+                items:
+                  $ref: "#/components/schemas/Tweet"
+        "404":
+          description: Not Found
+      operationId: getTweet
+      tags:
+        - tweet
+      description: 指定したツイートを取得します
+    delete:
+      summary: 指定したツイートを削除
+      responses:
+        "200":
+          description: OK
+      operationId: deteleTweet
+      tags:
+        - tweet
+      description: 指定したツイートを削除します
+  /users/{username}/tweets:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    get:
+      summary: 指定したユーザーのツイートを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ツイートの配列
+                items:
+                  $ref: "#/components/schemas/Tweet"
+        "404":
+          description: Not Found
+      operationId: getUserTweets
+      tags:
+        - tweet
+  /tweets/{tweetID}/likes:
+    parameters:
+      - $ref: "#/components/parameters/tweetIDInPath"
+    post:
+      summary: 指定したツイートにいいね
+      responses:
+        "201":
+          description: Created
+      operationId: postLike
+      tags:
+        - like
+      description: 指定したツイートにいいねする
+    delete:
+      summary: 指定したツイートからいいね取り消し
+      responses:
+        "200":
+          description: OK
+        "409":
+          description: Conflict
+      operationId: deleteLike
+      tags:
+        - like
+  /users/{username}/likes:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    get:
+      summary: 指定したユーザーがいいねしたツイート取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ツイートの配列
+                items:
+                  $ref: "#/components/schemas/Tweet"
+        "404":
+          description: Not Found
+      operationId: getUserLikes
+      tags:
+        - like
+  /users/{username}/follows:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    post:
+      summary: 指定したユーザーをフォロー
+      responses:
+        "201":
+          description: Created
+        "409":
+          description: Conflict
+      operationId: postFollow
+      tags:
+        - follow
+    delete:
+      summary: 指定したユーザーをフォロー解除
+      responses:
+        "200":
+          description: OK
+      operationId: deleteFollow
+      tags:
+        - follow
+  /users/{username}/following:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    get:
+      summary: 指定したユーザーがフォローしているユーザーを取得
+      responses:
+        "200":
+          description: OK
+      operationId: getFollowing
+      tags:
+        - follow
+  /users/{username}/followers:
+    parameters:
+      - $ref: "#/components/parameters/usernameInPath"
+    get:
+      summary: 指定したユーザーをフォローしているユーザーを取得
+      responses:
+        "200":
+          description: OK
+      operationId: getFollowers
+      tags:
+        - follow
+
+  /signup:
+    post:
+      tags:
+        - login
+      summary: ユーザー登録
+      description: ユーザーを登録する
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                  example: _ymdtr_
+                password:
+                  type: string
+                  format: password
+                  example: a
+              required:
+                - userid
+                - password
+      responses:
+        "200":
+          description: 正常に登録される
+        "400":
+          description: 項目が空です
+        "409":
+          description: ユーザーが既に存在しています
+  /login:
+    post:
+      tags:
+        - login
+      summary: ログイン
+      description: ログインする
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                  example: _ymdtr_
+                password:
+                  type: string
+                  format: password
+                  example: a
+              required:
+                - userid
+                - password
+      responses:
+        "200":
+          description: ログインに成功する
+        "403":
+          description: パスワードが間違っている
+        "500":
+          description: 何かエラーが返ってくる
+  /whoami:
+    get:
+      tags:
+        - login
+      summary: ログインの確認
+      description: 君誰
+      responses:
+        "200":
+          description: ログイン中
+  /logout:
+    get:
+      tags:
+        - login
+      summary: ログアウトする
+      description: 君誰
+      responses:
+        "200":
+          description: ログアウトに成功する
+        "500":
+          description: 何かエラーが返ってくる
+  /home:
+    get:
+      tags:
+        - tweet
+      summary: ホーム
+      description: ホームのツイートを獲得する
+      responses:
+        "200":
+          description: ツイートが取得できる
+        "404":
+          description: 何かエラーが返ってくる
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ユーザー情報
+      properties:
+        userID:
+          type: number
+          description: ユーザー
+        username:
+          type: string
+          description: ユーザー名
+          minLength: 1
+          maxLength: 15
+        displayName:
+          type: string
+          description: ユーザー表示名
+          minLength: 1
+          maxLength: 50
+        bio:
+          type: string
+          description: 自己紹介
+          minLength: 0
+          maxLength: 160
+      required:
+        - userID
+        - username
+        - displayName
+    UserDetail:
+      title: UserDetail
+      type: object
+      description: ユーザー詳細情報
+      properties:
+        userID:
+          type: number
+          description: ユーザー
+        username:
+          type: string
+          description: ユーザー名
+          minLength: 1
+          maxLength: 15
+        displayName:
+          type: string
+          description: ユーザー表示名
+          minLength: 1
+          maxLength: 50
+        bio:
+          type: string
+          description: 自己紹介
+          minLength: 0
+          maxLength: 160
+        location:
+          type: string
+          description: 場所
+          minLength: 0
+          maxLength: 30
+        website:
+          type: string
+          description: Web
+          minLength: 0
+          maxLength: 100
+      required:
+        - userID
+        - username
+        - displayName
+    Tweet:
+      title: Tweet
+      type: object
+      description: ツイート
+      properties:
+        tweetID:
+          type: number
+          description: ツイートID
+        userID:
+          type: number
+          description: ツイートしたユーザー
+        Content:
+          type: string
+          description: ツイートの中身
+        Reply:
+          type: number
+          description: リプライするツイート
+        Quote:
+          type: number
+          description: 引用するツイート
+
+  parameters:
+    usernameInPath:
+      name: username
+      in: path
+      required: true
+      description: ユーザー名
+      schema:
+        type: string
+    tweetIDInPath:
+      name: tweetID
+      in: path
+      required: true
+      description: ツイートID
+      schema:
+        type: number
+
+tags:
+  - name: user
+    description: ユーザーAPI
+  - name: tweet
+    description: ツイートAPI
+  - name: like
+    description: いいねAPI
+  - name: follow
+    description: フォローAPI
+  - name: login
+    description: ログインAPI
